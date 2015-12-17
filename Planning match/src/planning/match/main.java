@@ -8,7 +8,7 @@ import planning.match.participants.Arbitre;
 public class main {
 
     public static void main(String[] args) {
-        Arbitre arbitre = new Arbitre(1,"Dugelet","Aubin","Touche","JAT2","Française");
+        Arbitre arbitre = new Arbitre(1,"Dugelet","Aubin","Touche","JAT2","Française",0,0);
         System.out.println(arbitre);
         System.out.println();
         System.out.println();

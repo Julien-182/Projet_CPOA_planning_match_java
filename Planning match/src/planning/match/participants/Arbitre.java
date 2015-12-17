@@ -5,16 +5,28 @@ public class Arbitre {
     private String nom;
     private String prenom;
     private String categorie_arbitre;
-    private String rank_arbitre;
+    protected String rank_arbitre;
     private String nationalite;
+    private int nbSimple;
+    private int nbDouble;
     
-    public Arbitre(int id_arbitre, String nom, String prenom, String categorie_arbitre, String rank_arbitre, String nationalite){
+    public Arbitre(int id_arbitre, String nom, String prenom, String categorie_arbitre, String rank_arbitre, String nationalite, 
+                    int nbSimple, int nbDouble){
         this.id_arbitre = id_arbitre;
         this.nom = nom;
         this.prenom = prenom;
         this.categorie_arbitre = categorie_arbitre;
         this.rank_arbitre = rank_arbitre;
         this.nationalite = nationalite;
+        this.nbSimple = nbSimple;
+        this.nbDouble = nbDouble;
+    }
+
+    @Override
+    public String toString() {
+        return "Arbitre {" + "\nid_arbitre = " + id_arbitre + "\nnom = " + nom + "\nprenom = " + prenom + 
+                "\ncategorie_arbitre = " + categorie_arbitre + "\nrank_arbitre = " + rank_arbitre 
+                + "\nnationalite = " + nationalite + " }";
     }
 
     public int getId_arbitre() {
@@ -41,6 +53,14 @@ public class Arbitre {
         return nationalite;
     }
 
+    public int getNbSimple() {
+        return nbSimple;
+    }
+
+    public int getNbDouble() {
+        return nbDouble;
+    }
+
     public void setId_arbitre(int id_arbitre) {
         this.id_arbitre = id_arbitre;
     }
@@ -65,13 +85,19 @@ public class Arbitre {
         this.nationalite = nationalite;
     }
 
-    @Override
-    public String toString() {
-        return "Arbitre {" + "\nid_arbitre = " + id_arbitre + "\nnom = " + nom + "\nprenom = " + prenom + 
-                "\ncategorie_arbitre = " + categorie_arbitre + "\nrank_arbitre = " + rank_arbitre 
-                + "\nnationalite = " + nationalite + " }";
+    public void setNbSimple(int nbSimple) {
+        this.nbSimple = nbSimple;
     }
-     
     
+    public int arbitrerMatchSimple(int nbSimple){
+        return nbSimple++;
+    }
+
+    public void setNbDouble(int nbDouble) {
+        this.nbDouble = nbDouble;
+    }   
     
+    public int arbitrerMatchDouble(int nbDouble){
+        return nbDouble++;
+    }
 }
