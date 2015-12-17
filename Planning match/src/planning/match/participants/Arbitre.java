@@ -1,4 +1,4 @@
-package planning.match.match;
+package planning.match.participants;
 
 public class Arbitre {
     private int id_arbitre;

@@ -1,4 +1,4 @@
-package planning.match.match;
+package planning.match.participants;
 
 public class Ramasseur {
     private int id_ramasseur;

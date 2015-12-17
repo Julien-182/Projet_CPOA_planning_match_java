@@ -1,13 +1,17 @@
-package planning.match.participants;
+package planning.match.match;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Match {
     private int id_match;
-    private Date date;
+    private String date;
     
-    public Match(int id_match, Date date){
+    public Match(int id_match, String date){
         this.id_match = id_match;
-        this.date = new Date(date);
+        SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy" );
+        Date currentTime_1 = new Date();
+        String dateString = formatter.format(currentTime_1);
+        this.date = dateString;
     }
 
     @Override
@@ -19,7 +23,7 @@ public class Match {
         return id_match;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -27,7 +31,7 @@ public class Match {
         this.id_match = id_match;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
     

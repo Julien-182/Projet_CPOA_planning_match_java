@@ -1,6 +1,9 @@
 package planning.match;
-import planning.match.match.*;
-import planning.match.participants.*;
+import planning.match.match.Match;
+import planning.match.participants.Equipe;
+import planning.match.participants.Joueur;
+import planning.match.participants.Ramasseur;
+import planning.match.participants.Arbitre;
 
 public class main {
 
@@ -21,7 +24,7 @@ public class main {
         System.out.println(ramasseur);
         System.out.println();
         System.out.println();
-        Match match = new Match(1,(2013,0,31è));
+        Match match = new Match(1,("17/12/2015"));
         System.out.println(match);
     }
     
