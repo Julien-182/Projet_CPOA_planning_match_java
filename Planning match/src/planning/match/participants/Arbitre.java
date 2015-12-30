@@ -4,18 +4,16 @@ public class Arbitre {
     private int id_arbitre;
     private String nom;
     private String prenom;
-    private String categorie_arbitre;
     protected String rank_arbitre;
     private String nationalite;
     private int nbSimple;
     private int nbDouble;
     
-    public Arbitre(int id_arbitre, String nom, String prenom, String categorie_arbitre, String rank_arbitre, String nationalite, 
+    public Arbitre(int id_arbitre, String nom, String prenom, String rank_arbitre, String nationalite, 
                     int nbSimple, int nbDouble){
         this.id_arbitre = id_arbitre;
         this.nom = nom;
         this.prenom = prenom;
-        this.categorie_arbitre = categorie_arbitre;
         this.rank_arbitre = rank_arbitre;
         this.nationalite = nationalite;
         this.nbSimple = nbSimple;
@@ -25,8 +23,7 @@ public class Arbitre {
     @Override
     public String toString() {
         return "Arbitre {" + "\nid_arbitre = " + id_arbitre + "\nnom = " + nom + "\nprenom = " + prenom + 
-                "\ncategorie_arbitre = " + categorie_arbitre + "\nrank_arbitre = " + rank_arbitre 
-                + "\nnationalite = " + nationalite + " }";
+                "\nrank_arbitre = " + rank_arbitre + "\nnationalite = " + nationalite + " }";
     }
 
     public int getId_arbitre() {
@@ -39,10 +36,6 @@ public class Arbitre {
 
     public String getPrenom() {
         return prenom;
-    }
-
-    public String getCategorie_arbitre() {
-        return categorie_arbitre;
     }
 
     public String getRank_arbitre() {
@@ -71,10 +64,6 @@ public class Arbitre {
 
     public void setPrenom(String prenom) {
         this.prenom = prenom;
-    }
-
-    public void setCategorie_arbitre(String categorie_arbitre) {
-        this.categorie_arbitre = categorie_arbitre;
     }
 
     public void setRank_arbitre(String rank_arbitre) {
