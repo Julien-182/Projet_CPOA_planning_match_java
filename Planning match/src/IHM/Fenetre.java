@@ -7,6 +7,9 @@ import javax.swing.SwingUtilities;
 
 public class Fenetre extends JFrame{
     
+    private PanelAjout panelAjout;
+    private PanelPlanning panelPlanning;
+    
     public Fenetre(){
         setTitle("MATCH PLANNIFICATOR");
         setSize(new Dimension(1000,700));
@@ -16,9 +19,16 @@ public class Fenetre extends JFrame{
     }
     
     private void initComponent(){
-        PanelEdit panelEdit = new PanelEdit();
+        panelAjout = new PanelAjout();
+        panelPlanning = new PanelPlanning();
+        
+        add(panelEdit);
+        add(panelAjout);
+        add(panelPlanning);
         this.setContentPane(panelEdit);
+        System.out.println(this.getContentPane().getClass());
     }
+
     
     public static void main(String[] args){
         SwingUtilities.invokeLater(new Runnable() {
