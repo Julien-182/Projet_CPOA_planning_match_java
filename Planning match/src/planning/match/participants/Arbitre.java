@@ -1,6 +1,7 @@
 package planning.match.participants;
 
 public class Arbitre {
+    
     private int id_arbitre;
     private String nom;
     private String prenom;
@@ -88,5 +89,37 @@ public class Arbitre {
     
     public int arbitrerMatchDouble(int nbDouble){
         return nbDouble++;
+    }
+    
+    /**
+     * 
+     * @return vrai si l'arbitre à le rang nécéssaire pour être arbitre de chaise
+     */
+    public boolean isArbitreChaise(){
+        return "ITT1".equals(this.getRank_arbitre());
+    }
+    
+    /**
+     * 
+     * @return vrai si l'arbitre à le rang nécéssaire pour être arbitre de chaise
+     */
+    public boolean isArbitreFiletLigne(){
+        return "JAT2".equals(this.getRank_arbitre());
+    }
+        
+    /**
+     * 
+     * @return vrai si l'arbitre peut arbitrer un match simple
+     */
+    public boolean canArbitrerSimple(){
+        return this.getNbSimple() < 2;
+    }
+    
+    /**
+     * 
+     * @return vrai si l'arbitre peut arbitrer un match double
+     */
+    public boolean canArbitreDouble(){
+        return this.getNbDouble() < 2;
     }
 }

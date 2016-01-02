@@ -22,11 +22,10 @@ public class Fenetre extends JFrame{
         panelAjout = new PanelAjout();
         panelPlanning = new PanelPlanning();
         
-        add(panelEdit);
+        add(panelPlanning);
         add(panelAjout);
         add(panelPlanning);
-        this.setContentPane(panelEdit);
-        System.out.println(this.getContentPane().getClass());
+        this.setContentPane(panelPlanning);
     }
 
     
