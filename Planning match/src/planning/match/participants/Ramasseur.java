@@ -1,6 +1,9 @@
 package planning.match.participants;
 
+import java.util.Date;
+
 public class Ramasseur {
+    
     private int id_ramasseur;
     private String nom;
     private String prenom;
@@ -27,18 +30,17 @@ public class Ramasseur {
     public String getPrenom() {
         return prenom;
     }
-
-    public void setId_ramasseur(int id_ramasseur) {
-        this.id_ramasseur = id_ramasseur;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
     
-    
+    //A FAIRE
+    public boolean estDisponible(Date date, String creneau){
+         /*
+            Recuperer tous les matchs joués pendant la date et le créneau
+            Regarder dans les matchs si l'arbitre est assigné au match
+                SI OUI --> return false (pas dispo)
+                SI NON --> return true (dispo)
+        */
+        
+        return true;
+    }
+  
 }

@@ -10,27 +10,28 @@ public class Match{
     
     private int id_match;
     private String date;
-    private Creneau creneau;
+    private String creneau;
     private String categorie_match;
-    private Tour tour;
+    private String tour;
+    private String court;
     
     private Arbitre arbitreChaise, arbitreFilet;
-    private List<Arbitre> arbitresLigne;
-    private List<Ramasseur> ramasseurs;
-    private List participant1;
-    private List participant2;
+    private List<Arbitre> arbitresLigne = new ArrayList<>();
+    private List<Ramasseur> ramasseursDroite = new ArrayList<>();
+    private List<Ramasseur> ramasseursGauche = new ArrayList<>();
+    private Participant participant1;
+    private Participant participant2;
     
     
-    
-    public Match(int id_match, String date){
+    public Match(int id_match, String date, String creneau, String categorie, String tour){
         this.id_match = id_match;
         SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy" );
         Date currentTime_1 = new Date();
         String dateString = formatter.format(currentTime_1);
-        this.date = dateString;
-        
-        arbitresLigne = new ArrayList<>();
-        ramasseurs = new ArrayList<>();    
+        this.date = dateString;  
+        this.creneau = creneau;
+        this.categorie_match = categorie;
+        this.tour = tour;
     }
 
     @Override

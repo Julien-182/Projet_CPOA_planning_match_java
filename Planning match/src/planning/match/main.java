@@ -12,11 +12,11 @@ public class main {
         System.out.println(arbitre);
         System.out.println();
         System.out.println();
-        Equipe equipe = new Equipe(1,"3ème");
-        System.out.println(equipe);
-        System.out.println();
-        System.out.println();
-        Joueur joueur = new Joueur(1,"Ducrovic","Juvak","3ème tour");
+        //Equipe equipe = new Equipe(1,"3ème");
+        //System.out.println(equipe);
+        //System.out.println();
+        //System.out.println();
+        Joueur joueur = new Joueur(1,"Ducrovic","Juvak","3ème tour", "Français");
         System.out.println(joueur);
         System.out.println();
         System.out.println();

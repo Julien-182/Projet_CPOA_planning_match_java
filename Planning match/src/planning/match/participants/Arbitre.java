@@ -1,5 +1,13 @@
 package planning.match.participants;
 
+import bdd.ConfigConnection;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+
 public class Arbitre {
     
     private int id_arbitre;
@@ -55,26 +63,6 @@ public class Arbitre {
         return nbDouble;
     }
 
-    public void setId_arbitre(int id_arbitre) {
-        this.id_arbitre = id_arbitre;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public void setRank_arbitre(String rank_arbitre) {
-        this.rank_arbitre = rank_arbitre;
-    }
-
-    public void setNationalite(String nationalite) {
-        this.nationalite = nationalite;
-    }
-
     public void setNbSimple(int nbSimple) {
         this.nbSimple = nbSimple;
     }
@@ -121,5 +109,34 @@ public class Arbitre {
      */
     public boolean canArbitreDouble(){
         return this.getNbDouble() < 2;
+    }
+    
+    //A FAIRE
+    public boolean estDisponible(Date date, String creneau) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
+        /*
+            Recuperer tous les matchs joués pendant la date et le créneau
+            Regarder dans les matchs si l'arbitre est assigné au match
+                SI OUI --> return false (pas dispo)
+                SI NON --> return true (dispo)
+        */
+        Boolean dispo;
+        Class.forName("oracle.jdbc.OracleDriver");
+            // Connexion à la base
+        Connection conn = new ConfigConnection().getConnection ("connect.properties");
+        conn.setAutoCommit(false);
+
+        Statement stmt = conn.createStatement();
+        ResultSet rset = stmt.executeQuery("SELECT id_arbitre "
+                                         + "FROM ASSIGNMENT_ARBITRE "
+                                         + "WHERE id_match IN("
+                                                               + "SELECT id_match"
+                                                               + " FROM MATCHS "
+                                                               + "WHERE date_match = date AND creneau_match = creneau"
+                                        + ")");
+        if(rset.next()) dispo =  false;
+        else dispo = true;
+        rset.close();
+        conn.close();
+        return dispo;
     }
 }
