@@ -2,18 +2,18 @@ package planning.match.match;
 
 import java.util.List;
 import planning.match.participants.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
+
 
 public class Match{
     
     private int id_match;
-    private String date;
+    private Date date;
     private String creneau;
     private String categorie_match;
     private String tour;
-    private String court;
+    private Court court;
     
     private Arbitre arbitreChaise, arbitreFilet;
     private List<Arbitre> arbitresLigne = new ArrayList<>();
@@ -23,12 +23,8 @@ public class Match{
     private Participant participant2;
     
     
-    public Match(int id_match, String date, String creneau, String categorie, String tour){
-        this.id_match = id_match;
-        SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy" );
-        Date currentTime_1 = new Date();
-        String dateString = formatter.format(currentTime_1);
-        this.date = dateString;  
+    public Match(int id_match, Date date, String creneau, String categorie, String tour){
+        this.date = date;   
         this.creneau = creneau;
         this.categorie_match = categorie;
         this.tour = tour;
@@ -36,14 +32,18 @@ public class Match{
 
     @Override
     public String toString() {
-        return "Match {" + "\nid_match = " + id_match + "\ndate = " + date + " }";
+        return "Match{" + "id_match=" + id_match + ", date=" + date + ", creneau=" + creneau + ", categorie_match=" 
+                + categorie_match + ", tour=" + tour + ", court=" + court + ", arbitreChaise=" + arbitreChaise 
+                + ", arbitreFilet=" + arbitreFilet + ", arbitresLigne=" + arbitresLigne + ", ramasseursDroite=" 
+                + ramasseursDroite + ", ramasseursGauche=" + ramasseursGauche + ", participant1=" + participant1 
+                + ", participant2=" + participant2 + '}';
     }
     
     public int getId_match() {
         return id_match;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
@@ -51,7 +51,7 @@ public class Match{
         this.id_match = id_match;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date){
         this.date = date;
     }
     

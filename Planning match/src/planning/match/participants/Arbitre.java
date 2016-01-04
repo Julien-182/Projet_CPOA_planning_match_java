@@ -100,7 +100,12 @@ public class Arbitre {
      * @return vrai si l'arbitre peut arbitrer un match simple
      */
     public boolean canArbitrerSimple(){
-        return this.getNbSimple() < 2;
+        if(this.isArbitreChaise()){
+            return this.getNbSimple() < 2;
+        }else{
+            return true;
+        }
+        
     }
     
     /**
@@ -108,7 +113,11 @@ public class Arbitre {
      * @return vrai si l'arbitre peut arbitrer un match double
      */
     public boolean canArbitreDouble(){
-        return this.getNbDouble() < 2;
+        if(this.isArbitreChaise()){
+            return this.getNbDouble() < 2;
+        }else{
+            return true;
+        }
     }
     
     //A FAIRE

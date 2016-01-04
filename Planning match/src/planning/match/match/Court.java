@@ -7,13 +7,13 @@ package planning.match.match;
 public class Court{
     private int id_court;
     private int nbPlaces;
-    private boolean occupe;
+    private String nomCourt;
     
 
-    public Court(int id_court, int nbPlaces, boolean occupe){
+    public Court(int id_court, int nbPlaces, String nomCourt){
         this.id_court = id_court;
         this.nbPlaces = nbPlaces;
-        this.occupe = false;
+        this.nomCourt = nomCourt;
     }
 
     public int getId_court() {
@@ -24,8 +24,8 @@ public class Court{
         return nbPlaces;
     }
 
-    public boolean isOccupe() {
-        return occupe;
+    public String getNomCourt() {
+        return nomCourt;
     }
 
     public void setId_court(int id_court) {
@@ -36,7 +36,7 @@ public class Court{
         this.nbPlaces = nbPlaces;
     }
 
-    public void setOccupe(boolean occupe) {
-        this.occupe = occupe;
+    public void setNomCourt(String nomCourt) {
+        this.nomCourt = nomCourt;
     }
 }

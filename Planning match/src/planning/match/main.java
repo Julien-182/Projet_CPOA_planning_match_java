@@ -1,4 +1,5 @@
 package planning.match;
+import java.text.ParseException;
 import planning.match.match.Match;
 import planning.match.participants.Equipe;
 import planning.match.participants.Joueur;
@@ -7,7 +8,7 @@ import planning.match.participants.Arbitre;
 
 public class main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         Arbitre arbitre = new Arbitre(1,"Dugelet","Aubin","JAT2","Française",0,0);
         System.out.println(arbitre);
         System.out.println();
@@ -24,8 +25,8 @@ public class main {
         System.out.println(ramasseur);
         System.out.println();
         System.out.println();
-        Match match = new Match(1,("17/12/2015"));
-        System.out.println(match);
+        //Match match = new Match(1,17/12/2015,"19h-20h","simple","finale");
+        //System.out.println(match);
     }
     
 }
