@@ -30,7 +30,7 @@ INSERT INTO EQUIPE VALUES (7, 8, 'Qualification');
 INSERT INTO EQUIPE VALUES (5, 6, 'Qualification');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE ARBITRE(
-	id_arbitre NUMBER(5) PRIMARY KEY,
+	id_arbitre NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
 	nom_arbitre VARCHAR2(64),
 	prenom_arbitre VARCHAR2(64),
 	rank_arbitre VARCHAR2(64),
@@ -49,35 +49,35 @@ INSERT INTO ARBITRE VALUES ('LAPIERRE', 'Renée', 'JAT2', 'Français');
 INSERT INTO ARBITRE VALUES ('JACQUES', 'Arnaude', 'JAT2', 'Français');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE RAMASSEUR(
-	id_ramasseur NUMBER(5) PRIMARY KEY,
+	id_ramasseur NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
 	nom_ramasseur VARCHAR2(64),
 	prenom_ramasseur VARCHAR2(64),
 );
 
-INSERT INTO RAMASSEUR VALUES (1, 'PICSOU', 'Baltazar');
-INSERT INTO RAMASSEUR VALUES (2, 'RAMBERT', 'Hugo');
-INSERT INTO RAMASSEUR VALUES (3, 'LAMBERT', 'Emile');
-INSERT INTO RAMASSEUR VALUES (4, 'OTVARD', 'Baldwin');
-INSERT INTO RAMASSEUR VALUES (5, 'GERVIN', 'Ditbert');
-INSERT INTO RAMASSEUR VALUES (6, 'GUNTER', 'Alwin');
-INSERT INTO RAMASSEUR VALUES (7, 'INGVALD', 'Almar');
-INSERT INTO RAMASSEUR VALUES (8, 'DUHAMEL' , 'Damien');
-INSERT INTO RAMASSEUR VALUES (9, 'BONAMI', 'Orville');
-INSERT INTO RAMASSEUR VALUES (10, 'GAGNON', 'Claude');
+INSERT INTO RAMASSEUR VALUES ('PICSOU', 'Baltazar');
+INSERT INTO RAMASSEUR VALUES ('RAMBERT', 'Hugo');
+INSERT INTO RAMASSEUR VALUES ('LAMBERT', 'Emile');
+INSERT INTO RAMASSEUR VALUES ('OTVARD', 'Baldwin');
+INSERT INTO RAMASSEUR VALUES ('GERVIN', 'Ditbert');
+INSERT INTO RAMASSEUR VALUES ('GUNTER', 'Alwin');
+INSERT INTO RAMASSEUR VALUES ('INGVALD', 'Almar');
+INSERT INTO RAMASSEUR VALUES ('DUHAMEL' , 'Damien');
+INSERT INTO RAMASSEUR VALUES ('BONAMI', 'Orville');
+INSERT INTO RAMASSEUR VALUES ('GAGNON', 'Claude');
 /*------------------------------------------------------------------------*/
 CREATE TABLE COURT(
-	id_court NUMBER(5) PRIMARY KEY,
+	id_court NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
 	nom_court VARCHAR2(64),
 	nb_places NUMBER(5)
 );
 
-INSERT INTO COURT VALUES (1, 'Grand Court de Gerlan', 1100);
-INSERT INTO COURT VALUES (2, 'Court de Saint-Andre', 600);
-INSERT INTO COURT VALUES (3, 'Moyen Court', 330);
-INSERT INTO COURT VALUES (4, 'Golden Court', 850);
+INSERT INTO COURT VALUES ('Grand Court de Gerlan', 1100);
+INSERT INTO COURT VALUES ('Court de Saint-Andre', 600);
+INSERT INTO COURT VALUES ('Moyen Court', 330);
+INSERT INTO COURT VALUES ('Golden Court', 850);
 /*-----------------------------------------------------------------------*/
 CREATE TABLE MATCHS(
-	id_match NUMBER(5) PRIMARY KEY,
+	id_match NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
 	date_match DATE,
 	creneau_match VARCHAR2(4) CHECK (VALUES IN ('8am', '11am', '3pm', '6pm', '9pm')),
 	categorie_match VARCHAR2(64) CHECK (VALUES IN('Simple Homme', 'Simple Femme', 'Double Homme', 'Double Femme')),
@@ -86,7 +86,7 @@ CREATE TABLE MATCHS(
 	FOREIGN KEY (id_court) REFERENCES COURT(id_court)
 );
 
-INSERT INTO MATCHS VALUES (1, TO_DATE('2016-01-05', 'yyyy-mm-dd'), '8am', 'Simple Homme', 'Qualification', 1);
+INSERT INTO MATCHS VALUES (TO_DATE('2016-01-05', 'yyyy-mm-dd'), '8am', 'Simple Homme', 'Qualification', 1);
 INSERT INTO MATCHS
 /*-----------------------------------------------------------------------*/
 CREATE TABLE ASSIGNEMENT_JOUEUR(
