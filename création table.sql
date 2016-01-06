@@ -1,28 +1,29 @@
 CREATE TABLE JOUEUR(
-	id_joueur NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_joueur NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	nom_joueur VARCHAR2(64),
 	prenom_joueur VARCHAR2(64),
-	qualification VARCHAR2(64) CHECK (VALUES IN ('Qualification', 'Quart de finale', 'Demi-finale', 'Finale')),
+	qualification ENUM('Qualification' ,'Quart de finale' ,'Demi-finale','Finale'),
 	nationalite VARCHAR2(64)
-);
+	sexe VARCHAR2(5)
+); /*FAIT*/
 
-INSERT INTO JOUEUR VALUES ('Nadal', 'Raphaël', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Federer', 'Roger', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Djokovic', 'Novak', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Tsonga', 'Jo-Wilfried', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Ferrer', 'David', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Gasquet', 'Richard', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Murray', 'Andy', 'Qualification');
-INSERT INTO JOUEUR VALUES ('Raonic', 'Milos', 'Qualification');
+INSERT INTO JOUEUR VALUES ('Nadal', 'Raphaël', 'Qualification', 'Français', 'Homme');
+INSERT INTO JOUEUR VALUES ('Federer', 'Roger', 'Qualification', 'Suisse', 'Homme');
+INSERT INTO JOUEUR VALUES ('Djokovic', 'Novak', 'Qualification', 'Serbe', 'Homme');
+INSERT INTO JOUEUR VALUES ('Tsonga', 'Jo-Wilfried', 'Qualification', 'Français', 'Homme');
+INSERT INTO JOUEUR VALUES ('Ferrer', 'David', 'Qualification', 'Espagnol', 'Homme');
+INSERT INTO JOUEUR VALUES ('Gasquet', 'Richard', 'Qualification','Français', 'Homme');
+INSERT INTO JOUEUR VALUES ('Murray', 'Andy', 'Qualification', 'Américain', 'Homme');
+INSERT INTO JOUEUR VALUES ('Raonic', 'Milos', 'Qualification', 'Anglais', 'Homme');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE EQUIPE(
-	id_equipe NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_equipe NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	id_joueur1 NUMBER(5),
 	id_joueur2 NUMBER(5),
-	qualification VARCHAR2(64) CHECK (VALUES IN ('Qualification', 'Quart de finale', 'Demi-finale', 'Finale')),
+	qualification ENUM('Qualification','Quart de finale','Demi-finale','Finale'),
 	FOREIGN KEY (id_joueur1) REFERENCES JOUEUR(id_joueur),
 	FOREIGN KEY (id_joueur2) REFERENCES JOUEUR(id_joueur)
-);
+); /*FAIT*/
 
 INSERT INTO EQUIPE VALUES (1, 2, 'Qualification');
 INSERT INTO EQUIPE VALUES (3, 4, 'Qualification');
@@ -30,12 +31,12 @@ INSERT INTO EQUIPE VALUES (7, 8, 'Qualification');
 INSERT INTO EQUIPE VALUES (5, 6, 'Qualification');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE ARBITRE(
-	id_arbitre NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_arbitre NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	nom_arbitre VARCHAR2(64),
 	prenom_arbitre VARCHAR2(64),
 	rank_arbitre VARCHAR2(64),
 	nationalite VARCHAR2(64)
-);
+); /*FAIT*/
 
 INSERT INTO ARBITRE VALUES ('DUGELET', 'Aubin', 'JAT2', 'Français');
 INSERT INTO ARBITRE VALUES ('DUROT', 'Julien', 'JAT2', 'Anglais');
@@ -49,10 +50,10 @@ INSERT INTO ARBITRE VALUES ('LAPIERRE', 'Renée', 'JAT2', 'Français');
 INSERT INTO ARBITRE VALUES ('JACQUES', 'Arnaude', 'JAT2', 'Français');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE RAMASSEUR(
-	id_ramasseur NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_ramasseur NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	nom_ramasseur VARCHAR2(64),
 	prenom_ramasseur VARCHAR2(64),
-);
+); /*FAIT*/
 
 INSERT INTO RAMASSEUR VALUES ('PICSOU', 'Baltazar');
 INSERT INTO RAMASSEUR VALUES ('RAMBERT', 'Hugo');
@@ -66,10 +67,10 @@ INSERT INTO RAMASSEUR VALUES ('BONAMI', 'Orville');
 INSERT INTO RAMASSEUR VALUES ('GAGNON', 'Claude');
 /*------------------------------------------------------------------------*/
 CREATE TABLE COURT(
-	id_court NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_court NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	nom_court VARCHAR2(64),
 	nb_places NUMBER(5)
-);
+); /*FAIT*/
 
 INSERT INTO COURT VALUES ('Grand Court de Gerlan', 1100);
 INSERT INTO COURT VALUES ('Court de Saint-Andre', 600);
@@ -77,17 +78,16 @@ INSERT INTO COURT VALUES ('Moyen Court', 330);
 INSERT INTO COURT VALUES ('Golden Court', 850);
 /*-----------------------------------------------------------------------*/
 CREATE TABLE MATCHS(
-	id_match NUMBER(5) PRIMARY KEY AUTO_INCREMENT,
+	id_match NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
 	date_match DATE,
-	creneau_match VARCHAR2(4) CHECK (VALUES IN ('8am', '11am', '3pm', '6pm', '9pm')),
-	categorie_match VARCHAR2(64) CHECK (VALUES IN('Simple Homme', 'Simple Femme', 'Double Homme', 'Double Femme')),
-	tour_match VARCHAR2(64) CHECK (VALUES IN ('Qualification', 'Quart de finale', 'Demi-finale', 'Finale')),
+	creneau_match ENUM('8am', '11am', '3pm', '6pm', '9pm'),
+	categorie_match ENUM('Simple Homme', 'Simple Femme', 'Double Homme', 'Double Femme'),
+	tour_match ENUM('Qualification','Quart de finale','Demi-finale','Finale'),
 	id_court NUMBER(5),
 	FOREIGN KEY (id_court) REFERENCES COURT(id_court)
-);
+); /*FAIT*/
 
 INSERT INTO MATCHS VALUES (TO_DATE('2016-01-05', 'yyyy-mm-dd'), '8am', 'Simple Homme', 'Qualification', 1);
-INSERT INTO MATCHS
 /*-----------------------------------------------------------------------*/
 CREATE TABLE ASSIGNEMENT_JOUEUR(
 	id_match NUMBER(5),
