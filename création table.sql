@@ -7,14 +7,40 @@ CREATE TABLE JOUEUR(
 	sexe VARCHAR2(5)
 ); /*FAIT*/
 
-INSERT INTO JOUEUR VALUES ('Nadal', 'Raphaël', 'Qualification', 'Français', 'Homme');
-INSERT INTO JOUEUR VALUES ('Federer', 'Roger', 'Qualification', 'Suisse', 'Homme');
-INSERT INTO JOUEUR VALUES ('Djokovic', 'Novak', 'Qualification', 'Serbe', 'Homme');
-INSERT INTO JOUEUR VALUES ('Tsonga', 'Jo-Wilfried', 'Qualification', 'Français', 'Homme');
-INSERT INTO JOUEUR VALUES ('Ferrer', 'David', 'Qualification', 'Espagnol', 'Homme');
-INSERT INTO JOUEUR VALUES ('Gasquet', 'Richard', 'Qualification','Français', 'Homme');
-INSERT INTO JOUEUR VALUES ('Murray', 'Andy', 'Qualification', 'Américain', 'Homme');
-INSERT INTO JOUEUR VALUES ('Raonic', 'Milos', 'Qualification', 'Anglais', 'Homme');
+INSERT INTO JOUEUR VALUES (1,'Nadal', 'Raphaël', 'Qualification', 'Français', 'Homme');
+INSERT INTO JOUEUR VALUES (2,'Federer', 'Roger', 'Qualification', 'Suisse', 'Homme');
+INSERT INTO JOUEUR VALUES (3,'Djokovic', 'Novak', 'Qualification', 'Serbe', 'Homme');
+INSERT INTO JOUEUR VALUES (4,'Tsonga', 'Jo-Wilfried', 'Qualification', 'Français', 'Homme');
+INSERT INTO JOUEUR VALUES (5,'Ferrer', 'David', 'Qualification', 'Espagnol', 'Homme');
+INSERT INTO JOUEUR VALUES (6,'Gasquet', 'Richard', 'Qualification','Français', 'Homme');
+INSERT INTO JOUEUR VALUES (7,'Murray', 'Andy', 'Qualification', 'Américain', 'Homme');
+INSERT INTO JOUEUR VALUES (8,'Raonic', 'Milos', 'Qualification', 'Anglais', 'Homme');
+
+INSERT INTO JOUEUR VALUES (9,'Berdych', 'Thomas', 'Qualification', 'RTC', 'Homme');
+INSERT INTO JOUEUR VALUES (10,'Isner', 'John', 'Qualification', 'USA', 'Homme');
+INSERT INTO JOUEUR VALUES (11,'Anderson', 'Kevin', 'Qualification', 'SER', 'Homme');
+INSERT INTO JOUEUR VALUES (12,'Cilic', 'Marin', 'Qualification', 'CRO', 'Homme');
+INSERT INTO JOUEUR VALUES (13,'Simon', 'Gilles', 'Qualification', 'FRA', 'Homme');
+INSERT INTO JOUEUR VALUES (14,'Goffin', 'David', 'Qualification','BEL', 'Homme');
+INSERT INTO JOUEUR VALUES (15,'Lopez', 'Feliciano', 'Qualification', 'ESP', 'Homme');
+INSERT INTO JOUEUR VALUES (16,'Tomic', 'Bernard', 'Qualification', 'AUS', 'Homme');
+
+INSERT INTO JOUEUR VALUES(17,'Williams','Serena','Qualification','USA','Femme');
+INSERT INTO JOUEUR VALUES(18,'Halep','Simona','Qualification','ROU','Femme');
+INSERT INTO JOUEUR VALUES(19,'Muguruza','Garbine','Qualification','ESP','Femme');
+INSERT INTO JOUEUR VALUES(20,'Sharapova','Maria','Qualification','RUS','Femme');
+INSERT INTO JOUEUR VALUES(21,'Radwanska','Agnieszka','Qualification','POL','Femme');
+INSERT INTO JOUEUR VALUES(22,'Kvitova','Petra','Qualification','RTC','Femme');
+INSERT INTO JOUEUR VALUES(23,'Williams','Venus','Qualification','USA','Femme');
+INSERT INTO JOUEUR VALUES(24,'Pennetta','Flavia','Qualification','ITA','Femme');
+INSERT INTO JOUEUR VALUES(25,'Safarova','Lucie','Qualification','RTC','Femme');
+INSERT INTO JOUEUR VALUES(26,'Kerber','Angelique','Qualification','ALL','Femme');
+INSERT INTO JOUEUR VALUES(27,'Pliskova','Karolina','Qualification','RTC','Femme');
+INSERT INTO JOUEUR VALUES(28,'Bacsinszky','Timea','Qualification','SUI','Femme');
+INSERT INTO JOUEUR VALUES(29,'Suarez Navarro','Carla','Qualification','ESP','Femme');
+INSERT INTO JOUEUR VALUES(30,'Bencic','Belinda','Qualification','SUI','Femme');
+INSERT INTO JOUEUR VALUES(31,'Vinci','Roberta','Qualification','ITA','Femme');
+INSERT INTO JOUEUR VALUES(32,'Ivanovic','Ana','Qualification','SER','Femme');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE EQUIPE(
 	id_equipe NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
@@ -25,10 +51,10 @@ CREATE TABLE EQUIPE(
 	FOREIGN KEY (id_joueur2) REFERENCES JOUEUR(id_joueur)
 ); /*FAIT*/
 
-INSERT INTO EQUIPE VALUES (1, 2, 'Qualification');
-INSERT INTO EQUIPE VALUES (3, 4, 'Qualification');
-INSERT INTO EQUIPE VALUES (7, 8, 'Qualification');
-INSERT INTO EQUIPE VALUES (5, 6, 'Qualification');
+INSERT INTO EQUIPE VALUES (1,1, 2, 'Qualification');
+INSERT INTO EQUIPE VALUES (2,3, 4, 'Qualification');
+INSERT INTO EQUIPE VALUES (3,5, 6, 'Qualification');
+INSERT INTO EQUIPE VALUES (4,7, 8, 'Qualification');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE ARBITRE(
 	id_arbitre NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
@@ -38,16 +64,16 @@ CREATE TABLE ARBITRE(
 	nationalite VARCHAR2(64)
 ); /*FAIT*/
 
-INSERT INTO ARBITRE VALUES ('DUGELET', 'Aubin', 'JAT2', 'Français');
-INSERT INTO ARBITRE VALUES ('DUROT', 'Julien', 'JAT2', 'Anglais');
-INSERT INTO ARBITRE VALUES ('MERLE', 'Jeremy', 'JAT2', 'Allemand');
-INSERT INTO ARBITRE VALUES ('AUBE', 'Aimée', 'JAT2', 'Espagnol');
-INSERT INTO ARBITRE VALUES ('DUGELET', 'Aubin', 'ITT1', 'Serbe');
-INSERT INTO ARBITRE VALUES ('SEGUIN', 'Delphine', 'ITT1', 'Français');
-INSERT INTO ARBITRE VALUES ('DESNOYER', 'Emmanuelle', 'ITT1', 'Français');
-INSERT INTO ARBITRE VALUES ('MARTINEAU', 'Charmaine', 'ITT1', 'Français');
-INSERT INTO ARBITRE VALUES ('LAPIERRE', 'Renée', 'JAT2', 'Français');
-INSERT INTO ARBITRE VALUES ('JACQUES', 'Arnaude', 'JAT2', 'Français');
+INSERT INTO ARBITRE VALUES (1,'DUGELET', 'Aubin', 'JAT2', 'Français');
+INSERT INTO ARBITRE VALUES (2,'DUROT', 'Julien', 'JAT2', 'Anglais');
+INSERT INTO ARBITRE VALUES (3,'MERLE', 'Jeremy', 'JAT2', 'Allemand');
+INSERT INTO ARBITRE VALUES (4,'AUBE', 'Aimée', 'JAT2', 'Espagnol');
+INSERT INTO ARBITRE VALUES (5,'DUGELET', 'Aubin', 'ITT1', 'Serbe');
+INSERT INTO ARBITRE VALUES (6,'SEGUIN', 'Delphine', 'ITT1', 'Français');
+INSERT INTO ARBITRE VALUES (7,'DESNOYER', 'Emmanuelle', 'ITT1', 'Français');
+INSERT INTO ARBITRE VALUES (8,'MARTINEAU', 'Charmaine', 'ITT1', 'Français');
+INSERT INTO ARBITRE VALUES (9,'LAPIERRE', 'Renée', 'JAT2', 'Français');
+INSERT INTO ARBITRE VALUES (10,'JACQUES', 'Arnaude', 'JAT2', 'Français');
 /*-------------------------------------------------------------------------*/
 CREATE TABLE RAMASSEUR(
 	id_ramasseur NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
@@ -55,16 +81,16 @@ CREATE TABLE RAMASSEUR(
 	prenom_ramasseur VARCHAR2(64),
 ); /*FAIT*/
 
-INSERT INTO RAMASSEUR VALUES ('PICSOU', 'Baltazar');
-INSERT INTO RAMASSEUR VALUES ('RAMBERT', 'Hugo');
-INSERT INTO RAMASSEUR VALUES ('LAMBERT', 'Emile');
-INSERT INTO RAMASSEUR VALUES ('OTVARD', 'Baldwin');
-INSERT INTO RAMASSEUR VALUES ('GERVIN', 'Ditbert');
-INSERT INTO RAMASSEUR VALUES ('GUNTER', 'Alwin');
-INSERT INTO RAMASSEUR VALUES ('INGVALD', 'Almar');
-INSERT INTO RAMASSEUR VALUES ('DUHAMEL' , 'Damien');
-INSERT INTO RAMASSEUR VALUES ('BONAMI', 'Orville');
-INSERT INTO RAMASSEUR VALUES ('GAGNON', 'Claude');
+INSERT INTO RAMASSEUR VALUES (1,'PICSOU', 'Baltazar');
+INSERT INTO RAMASSEUR VALUES (2,'RAMBERT', 'Hugo');
+INSERT INTO RAMASSEUR VALUES (3,'LAMBERT', 'Emile');
+INSERT INTO RAMASSEUR VALUES (4,'OTVARD', 'Baldwin');
+INSERT INTO RAMASSEUR VALUES (5,'GERVIN', 'Ditbert');
+INSERT INTO RAMASSEUR VALUES (6,'GUNTER', 'Alwin');
+INSERT INTO RAMASSEUR VALUES (7,'INGVALD', 'Almar');
+INSERT INTO RAMASSEUR VALUES (8,'DUHAMEL' , 'Damien');
+INSERT INTO RAMASSEUR VALUES (9,'BONAMI', 'Orville');
+INSERT INTO RAMASSEUR VALUES (10,'GAGNON', 'Claude');
 /*------------------------------------------------------------------------*/
 CREATE TABLE COURT(
 	id_court NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
@@ -72,10 +98,10 @@ CREATE TABLE COURT(
 	nb_places NUMBER(5)
 ); /*FAIT*/
 
-INSERT INTO COURT VALUES ('Grand Court de Gerlan', 1100);
-INSERT INTO COURT VALUES ('Court de Saint-Andre', 600);
-INSERT INTO COURT VALUES ('Moyen Court', 330);
-INSERT INTO COURT VALUES ('Golden Court', 850);
+INSERT INTO COURT VALUES (1,'Grand Court de Gerlan', 1100);
+INSERT INTO COURT VALUES (2,'Court de Saint-Andre', 600);
+INSERT INTO COURT VALUES (3,'Moyen Court', 330);
+INSERT INTO COURT VALUES (4,'Golden Court', 850);
 /*-----------------------------------------------------------------------*/
 CREATE TABLE MATCHS(
 	id_match NUMBER(5) AUTO_INCREMENT PRIMARY KEY,
@@ -95,7 +121,7 @@ CREATE TABLE ASSIGNEMENT_JOUEUR(
 	PRIMARY KEY(id_match,id_joueur),
 	FOREIGN KEY (id_match) REFERENCES MATCHS(id_match),
 	FOREIGN KEY (id_joueur) REFERENCES JOUEUR(id_joueur)
-);
+); /*FAIT*/
 /*-----------------------------------------------------------------------*/
 CREATE TABLE ASSIGNEMENT_ARBITRE(
 	id_match NUMBER(5),

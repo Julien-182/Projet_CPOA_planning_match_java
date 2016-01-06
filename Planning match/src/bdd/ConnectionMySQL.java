@@ -8,11 +8,11 @@ public class ConnectionMySQL {
     
     //JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    static final String DB_URL = "jdbc:mysql://localhost/cpoa";
+    static final String DB_URL = "jdbc:mysql://iutdoua-webetu.univ-lyon1.fr/p1404643";
 
     //  Database credentials
-    static final String USER = "root";
-    static final String PASS = "";
+    static final String USER = "p1404643";
+    static final String PASS = "213622";
     
     public ConnectionMySQL(){}
     
@@ -30,14 +30,8 @@ public class ConnectionMySQL {
             Logger.getLogger(ConnectionMySQL.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ConnectionMySQL.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
-           try{
-              if(conn!=null)
-                 conn.close();
-           }catch(SQLException se){
-              se.printStackTrace();
-           }
-        }      
+        }
+        System.out.println("SUCCESS");
         return conn;
     }
 }
