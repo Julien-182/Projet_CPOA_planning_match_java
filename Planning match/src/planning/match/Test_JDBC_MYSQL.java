@@ -3,8 +3,7 @@ package planning.match;
 import bdd.ConnectionMySQL;
 import java.sql.*;
 import java.util.ArrayList;
-import planning.match.match.Match;
-import planning.match.participants.Joueur;
+import planning.match.participants.*;
         
 /**
  *
