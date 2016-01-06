@@ -22,26 +22,22 @@ public class Test_JDBC_MYSQL {
         
         ResultSet rs = stmt.executeQuery("SELECT * FROM JOUEUR");
         System.out.println("test");
-        
-        int id_joueur = rs.getInt("id_joueur");
-        String nom_joueur = rs.getString("nom_joueur");
-        String prenom_joueur = rs.getString("prenom_joueur");
-        String qualification = rs.getString("qualification");
-        String nationalite = rs.getString("nationalite");
-        String sexe = rs.getString("sexe");
                 
         ArrayList<Joueur> joueurs =  new ArrayList<>();
             
         while(rs.next()){
+            int id_joueur = rs.getInt("id_joueur");
+            String nom_joueur = rs.getString("nom_joueur");
+            String prenom_joueur = rs.getString("prenom_joueur");
+            String qualification = rs.getString("qualification");
+            String nationalite = rs.getString("nationalite");
+            String sexe = rs.getString("sexe");
             joueurs.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification,nationalite,sexe));
-            System.out.println(id_joueur+nom_joueur+prenom_joueur+qualification+nationalite+sexe);
-            System.out.println("test");
         }
         
-        /*for(joueur in joueurs){
+        for(Joueur joueur : joueurs){
             System.out.println(joueur);
         }
-        System.out.println(joueurs);*/
 
         rs.close();
         stmt.close();
