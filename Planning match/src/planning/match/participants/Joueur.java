@@ -11,53 +11,59 @@ import java.util.Date;
 public class Joueur extends Participant{
     
     private int id_joueur;
-    private String nom;
-    private String prenom;
-    private String tour;
+    private String nom_joueur;
+    private String prenom_joueur;
+    private String qualification;
     private String nationalite;
+    private String sexe;
     
-    public Joueur(int id_joueur, String nom, String prenom, String tour, String nationalite){
+    public Joueur(int id_joueur, String nom_joueur, String prenom_joueur, String qualification, String nationalite, String sexe){
         this.id_joueur = id_joueur;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.tour = tour;
+        this.nom_joueur = nom_joueur;
+        this.prenom_joueur = prenom_joueur;
+        this.qualification = qualification;
         this.nationalite = nationalite;
+        this.sexe = sexe;
     }
 
     @Override
     public String toString() {
-        return "Joueur {" + "\nid_joueur = " + id_joueur + "\nnom = " + nom + "\nprenom = " + prenom + "\ntour = " + tour + "\nnationalite = " + nationalite +" }";
+        return "Joueur {" + "\nid_joueur = " + id_joueur + "\nnom_joueur = " + nom_joueur + "\nprenom_joueur = " + prenom_joueur + "\nqualification = " + qualification + "\nnationalite = " + nationalite +"\nsexe = "+ sexe + " }";
     }
 
     public int getId_joueur() {
         return id_joueur;
     }
 
-    public String getNom() {
-        return nom;
+    public String getNom_joueur() {
+        return nom_joueur;
     }
 
-    public String getPrenom() {
-        return prenom;
+    public String getPrenom_joueur() {
+        return prenom_joueur;
     }
 
-    public String getTour() {
-        return tour;
+    public String getQualification() {
+        return qualification;
     }
     
     public String getNationalite(){
         return nationalite;
     }
 
-    public void setTour(String tour) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
-        this.tour = tour;
+    public String getSexe() {
+        return sexe;
+    }
+
+    public void setQualification(String qualification) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
+        this.qualification = qualification;
         Class.forName("oracle.jdbc.OracleDriver");
             // Connexion à la base
         Connection conn = new ConfigConnection().getConnection ("connect.properties");
         conn.setAutoCommit(false);
 
         Statement stmt = conn.createStatement();
-        ResultSet rset = stmt.executeQuery("UPDATE JOUEUR SET qualification = " + tour + " WHERE id_joueur = " + this.id_joueur);
+        ResultSet rset = stmt.executeQuery("UPDATE JOUEUR SET qualification = " + qualification + " WHERE id_joueur = " + this.id_joueur);
         rset.close();
         conn.close();
     }

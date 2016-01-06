@@ -2,6 +2,8 @@ package planning.match;
 
 import bdd.ConnectionMySQL;
 import java.sql.*;
+import java.util.ArrayList;
+import planning.match.participants.*;
         
 /**
  *
@@ -11,31 +13,36 @@ public class Test_JDBC_MYSQL {
     
     
     public static void main(String[] args) throws SQLException {
+        System.out.println("test");
          
         ConnectionMySQL coSQL = new ConnectionMySQL();
         Connection co = coSQL.getConnection();
         
         Statement stmt = co.createStatement();
         
-        ResultSet rs = stmt.executeQuery("SELECT nom_joueur, prenom_joueur\n" +
-                                        "FROM JOUEUR\n" +
-                                        "WHERE id_joueur\n" +
-                                        "IN (\n" +
-                                        "SELECT id_joueur1\n" +
-                                        "FROM EQUIPE\n" +
-                                        "WHERE id_equipe =1\n" +
-                                        "UNION SELECT id_joueur2\n" +
-                                        "FROM EQUIPE\n" +
-                                        "WHERE id_equipe =1\n" +
-                                        ")");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM JOUEUR");
+        System.out.println("test");
         
-        while(rs.next()){
-            String nom = rs.getString("nom_joueur");
-            String prenom = rs.getString("prenom_joueur");
+        int id_joueur = rs.getInt("id_joueur");
+        String nom_joueur = rs.getString("nom_joueur");
+        String prenom_joueur = rs.getString("prenom_joueur");
+        String qualification = rs.getString("qualification");
+        String nationalite = rs.getString("nationalite");
+        String sexe = rs.getString("sexe");
+                
+        ArrayList<Joueur> joueurs =  new ArrayList<>();
             
-            System.out.println("Nom : " + nom + ", prenom : " + prenom);
+        while(rs.next()){
+            joueurs.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification,nationalite,sexe));
+            System.out.println(id_joueur+nom_joueur+prenom_joueur+qualification+nationalite+sexe);
+            System.out.println("test");
         }
         
+        /*for(joueur in joueurs){
+            System.out.println(joueur);
+        }
+        System.out.println(joueurs);*/
+
         rs.close();
         stmt.close();
         co.close();
