@@ -15,6 +15,7 @@ public class Fenetre extends JFrame{
         setSize(new Dimension(1000,700));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         initComponent();
     }
     

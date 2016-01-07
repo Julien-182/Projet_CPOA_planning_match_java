@@ -1,13 +1,19 @@
 package planning.match.match;
 
+import java.sql.Connection;
 import java.util.List;
 import planning.match.participants.*;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class Match{
     
+    //Valeurs attribuées via le constructeur
+    private Connection co;
     private int id_match;
     private Date date;
     private String creneau;
@@ -15,33 +21,124 @@ public class Match{
     private String tour;
     private int id_court;
     
+    //Valeurs à trouver grâce aux méthodes
     private Arbitre arbitreChaise, arbitreFilet;
     private List<Arbitre> arbitresLigne = new ArrayList<>();
-    private List<Ramasseur> ramasseursDroite = new ArrayList<>();
-    private List<Ramasseur> ramasseursGauche = new ArrayList<>();
-    private Participant participant1;
-    private Participant participant2;
+    private List<Ramasseur> ramasseurs = new ArrayList<>();
+    private List<Joueur> participant1 = new ArrayList<>();
+    private List<Joueur> participant2 = new ArrayList<>();
     
-    
-    public Match(int id_match, Date date, String creneau, String categorie, String tour, int id_court){
+    public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour, int id_court) throws SQLException{
+        this.co = co;
         this.date = date;   
         this.creneau = creneau;
         this.categorie_match = categorie;
         this.tour = tour;
         this.id_court = id_court;
+        if(isMatchSimple())
+            findJoueurs();
+        else
+            findEquipe();
+        findArbitres();
+        findRamasseurs();
     }
 
+    public void findJoueurs() throws SQLException{
+        String query;
+        Statement stmt = co.createStatement();
+        int i = 0;
+        //cas avec 2 joueurs (simple)
+        query = "SELECT * "
+                + "FROM JOUEUR,ASSIGNEMENT_JOUEUR "
+                + "WHERE ASSIGNEMENT_JOUEUR.id_match = " + id_match + "AND JOUEUR.id_joueur = ASSIGNEMENT_JOUEUR.id_joueur";
+        ResultSet rs = stmt.executeQuery(query);
+        
+        //On parcours les 2 joueurs du match
+        while(rs.next()){
+            int id_joueur = rs.getInt("id_joueur");
+            String nom_joueur = rs.getString("nom_joueur");
+            String prenom_joueur = rs.getString("prenom_joueur");
+            String qualification = rs.getString("qualification");
+            String nationalite = rs.getString("nationalite");
+            String sexe = rs.getString("sexe");
+            if(i ==0){
+                participant1.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+                i++;
+            }
+            else{
+                participant2.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+            }
+        }
+        rs.close();
+        stmt.close();
+    }
+    
+    public void findEquipe() throws SQLException{
+        int id_equipe = 0, i = 0;
+        String query;
+        Statement stmt = co.createStatement();
+        Statement stmt2 = co.createStatement();
+        
+        query = "SELECT id_equipe FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id_match;
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()){
+            //Parcours chaque equipe
+            id_equipe = rs.getInt("id_equipe");
+            
+            query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM EQUIPE WHERE id_equipe = " + id_equipe;
+            ResultSet rs2 = stmt2.executeQuery(query);
+            //On parcours les joueurs de l'équipe. Si on est dans l'équipe 1
+            if(i == 0){
+                while(rs2.next()){
+                    participant1.add(new Joueur(rs.getInt("id_joueur"), 
+                                        rs.getString("nom_joueur"), 
+                                        rs.getString("prenom_joueur"), 
+                                        rs.getString("quelification"), 
+                                        rs.getString("nationalite"), 
+                                        rs.getString("sexe")));
+                }
+            }
+            //Si on est dfans l'équipe 2
+            else{
+                while(rs2.next()){
+                    participant2.add(new Joueur(rs.getInt("id_joueur"), 
+                                        rs.getString("nom_joueur"), 
+                                        rs.getString("prenom_joueur"), 
+                                        rs.getString("quelification"), 
+                                        rs.getString("nationalite"), 
+                                        rs.getString("sexe")));
+                }
+            }
+            i++; //permet de préciser que l'on change d'équpe.
+        }   
+        rs.close();
+        stmt.close();
+        stmt2.close();
+    }
+    
+    public void findArbitres(){
+        
+    }
+    
+    public void findRamasseurs(){
+        
+    }
+    
     @Override
     public String toString() {
         return "Match{" + "id_match=" + id_match + ", date=" + date + ", creneau=" + creneau + ", categorie_match=" 
                 + categorie_match + ", tour=" + tour + ", court=" + id_court + ", arbitreChaise=" + arbitreChaise 
-                + ", arbitreFilet=" + arbitreFilet + ", arbitresLigne=" + arbitresLigne + ", ramasseursDroite=" 
-                + ramasseursDroite + ", ramasseursGauche=" + ramasseursGauche + ", participant1=" + participant1 
+                + ", arbitreFilet=" + arbitreFilet + ", arbitresLigne=" + arbitresLigne + ", ramasseurs=" 
+                + ramasseurs + ", participant1=" + participant1 
                 + ", participant2=" + participant2 + '}';
     }
     
     public int getId_match() {
         return id_match;
+    }
+    
+    public boolean isMatchSimple(){
+        return this.categorie_match.equals("Simple Homme") || this.categorie_match.equals("Simple Femme");
     }
     
     public String getDateString(){
