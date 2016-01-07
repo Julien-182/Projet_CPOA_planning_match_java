@@ -31,7 +31,7 @@ public class Test_JDBC2 {
             String qualification = rs.getString("qualification");
             String nationalite = rs.getString("nationalite");
             String sexe = rs.getString("sexe");
-            joueurs.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification,nationalite,sexe));
+            joueurs.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur,qualification,nationalite,sexe));
         }
         
         for(Joueur joueur : joueurs){

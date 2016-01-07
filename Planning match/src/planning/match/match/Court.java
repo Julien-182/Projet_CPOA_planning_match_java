@@ -1,5 +1,8 @@
 package planning.match.match;
 
+import java.io.IOException;
+import java.sql.*;
+
 /**
  *
  * @author Bobbybel
@@ -8,9 +11,11 @@ public class Court{
     private int id_court;
     private int nbPlaces;
     private String nomCourt;
+    private Connection co;
     
 
-    public Court(int id_court, int nbPlaces, String nomCourt){
+    public Court(Connection co,int id_court, int nbPlaces, String nomCourt){
+        this.co = co;
         this.id_court = id_court;
         this.nbPlaces = nbPlaces;
         this.nomCourt = nomCourt;

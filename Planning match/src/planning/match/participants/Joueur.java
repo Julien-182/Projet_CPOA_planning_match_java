@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Joueur extends Participant{
     
+    private Connection co;
     private int id_joueur;
     private String nom_joueur;
     private String prenom_joueur;
@@ -17,7 +18,9 @@ public class Joueur extends Participant{
     private String nationalite;
     private String sexe;
     
-    public Joueur(int id_joueur, String nom_joueur, String prenom_joueur, String qualification, String nationalite, String sexe){
+    public Joueur(Connection co,int id_joueur, String nom_joueur, String prenom_joueur, String qualification, 
+            String nationalite, String sexe){
+        this.co = co;
         this.id_joueur = id_joueur;
         this.nom_joueur = nom_joueur;
         this.prenom_joueur = prenom_joueur;
@@ -57,15 +60,10 @@ public class Joueur extends Participant{
 
     public void setQualification(String qualification) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
         this.qualification = qualification;
-        Class.forName("oracle.jdbc.OracleDriver");
-            // Connexion à la base
-        Connection conn = new ConfigConnection().getConnection ("connect.properties");
-        conn.setAutoCommit(false);
 
-        Statement stmt = conn.createStatement();
-        ResultSet rset = stmt.executeQuery("UPDATE JOUEUR SET qualification = " + qualification + " WHERE id_joueur = " + this.id_joueur);
-        rset.close();
-        conn.close();
+        Statement stmt = this.co.createStatement();
+        stmt.executeUpdate("UPDATE JOUEUR SET qualification = " + qualification + " WHERE id_joueur = " + this.id_joueur);
+        stmt.close();
     }
     
     //A FAIRE
@@ -77,12 +75,8 @@ public class Joueur extends Participant{
                 SI NON --> return true (dispo)
         */
         Boolean dispo;
-        Class.forName("oracle.jdbc.OracleDriver");
-            // Connexion à la base
-        Connection conn = new ConfigConnection().getConnection ("connect.properties");
-        conn.setAutoCommit(false);
 
-        Statement stmt = conn.createStatement();
+        Statement stmt = this.co.createStatement();
         ResultSet rset = stmt.executeQuery("SELECT id_joueur "
                                          + "FROM ASSIGNMENT_JOUEUR "
                                          + "WHERE id_match IN("
@@ -93,8 +87,8 @@ public class Joueur extends Participant{
         if(rset.next()) dispo =  false;
         else dispo = true;
         
+        stmt.close();
         rset.close();
-        conn.close();
         return dispo;
     }
 }

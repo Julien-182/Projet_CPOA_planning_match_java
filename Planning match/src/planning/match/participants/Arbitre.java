@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Arbitre {
     
+    private Connection co;
     private int id_arbitre;
     private String nom;
     private String prenom;
@@ -18,8 +19,9 @@ public class Arbitre {
     private int nbSimple;
     private int nbDouble;
     
-    public Arbitre(int id_arbitre, String nom, String prenom, String rank_arbitre, String nationalite, 
+    public Arbitre(Connection co,int id_arbitre, String nom, String prenom, String rank_arbitre, String nationalite, 
                     int nbSimple, int nbDouble){
+        this.co = co;
         this.id_arbitre = id_arbitre;
         this.nom = nom;
         this.prenom = prenom;
@@ -129,14 +131,10 @@ public class Arbitre {
                 SI NON --> return true (dispo)
         */
         Boolean dispo;
-        Class.forName("oracle.jdbc.OracleDriver");
-            // Connexion à la base
-        Connection conn = new ConfigConnection().getConnection ("connect.properties");
-        conn.setAutoCommit(false);
-
-        Statement stmt = conn.createStatement();
-        ResultSet rset = stmt.executeQuery("SELECT id_arbitre "
-                                         + "FROM ASSIGNMENT_ARBITRE "
+        
+        Statement stmt = this.co.createStatement();
+        ResultSet rset = stmt.executeQuery("SELECT id_ramasseur "
+                                         + "FROM ASSIGNMENT_RAMASSEUR "
                                          + "WHERE id_match IN("
                                                                + "SELECT id_match"
                                                                + " FROM MATCHS "
@@ -144,8 +142,9 @@ public class Arbitre {
                                         + ")");
         if(rset.next()) dispo =  false;
         else dispo = true;
+        
+        stmt.close();
         rset.close();
-        conn.close();
         return dispo;
     }
 }

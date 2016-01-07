@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Equipe extends Participant{
@@ -15,8 +16,10 @@ public class Equipe extends Participant{
     private String tour;
     private Joueur joueur1;
     private Joueur joueur2;
+    private Connection co;
     
-    public Equipe(int id_equipe, String tour, Joueur j1, Joueur j2){
+    public Equipe(Connection co,int id_equipe, String tour, Joueur j1, Joueur j2){
+        this.co = co;
         this.id_equipe = id_equipe;
         this.tour = tour;
         this.joueur1 = j1;
@@ -44,20 +47,19 @@ public class Equipe extends Participant{
 
     public void setTour(String tour) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException {
         this.tour = tour;
-        Class.forName("oracle.jdbc.OracleDriver");
-            // Connexion à la base
-        Connection conn = new ConfigConnection().getConnection ("connect.properties");
-        conn.setAutoCommit(false);
 
-        Statement stmt = conn.createStatement();
-        ResultSet rset = stmt.executeQuery("UPDATE JOUEUR SET qualification = " + tour + " WHERE id_joueur = " + this.id_equipe);
-        rset.close();
-        conn.close();
+        Statement stmt = this.co.createStatement();
+        stmt.executeQuery("UPDATE JOUEUR SET qualification = " + tour + " WHERE id_joueur = " + this.id_equipe);
+        stmt.close();
     }
 
     @Override
     public String toString() {
         return "Equipe {" + "\nid_equipe = " + id_equipe + "\ntour = " + tour + " }";
+    }
+    
+    public boolean estDisponible(Date date, String creneau) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
+        return joueur1.estDisponible(date, creneau) && joueur2.estDisponible(date, creneau);
     }
     
 }
