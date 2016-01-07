@@ -1,6 +1,7 @@
 package planning.match;
 
 import bdd.ConnectionMySQL;
+import bdd.ConnectionMySQL;
 import java.sql.*;
 import java.util.ArrayList;
 import planning.match.participants.*;
@@ -13,7 +14,6 @@ public class Test_JDBC2 {
     
     
     public static void main(String[] args) throws SQLException {
-        System.out.println("test");
          
         ConnectionMySQL coSQL = new ConnectionMySQL();
         Connection co = coSQL.getConnection();
@@ -21,7 +21,6 @@ public class Test_JDBC2 {
         Statement stmt = co.createStatement();
         
         ResultSet rs = stmt.executeQuery("SELECT * FROM JOUEUR");
-        System.out.println("test");
                 
         ArrayList<Joueur> joueurs =  new ArrayList<>();
             
@@ -33,14 +32,12 @@ public class Test_JDBC2 {
             String nationalite = rs.getString("nationalite");
             String sexe = rs.getString("sexe");
             joueurs.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification,nationalite,sexe));
-            System.out.println(id_joueur+nom_joueur+prenom_joueur+qualification+nationalite+sexe);
-            System.out.println("test");
         }
         
-        /*for(joueur in joueurs){
-            System.out.println(joueur);
+        for(Joueur joueur : joueurs){
+            System.out.println(joueur+"\n\n");
         }
-        System.out.println(joueurs);*/
+        //System.out.println(joueurs+"\n\n\n\n");
 
         rs.close();
         stmt.close();
