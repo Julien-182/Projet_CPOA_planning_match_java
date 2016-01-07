@@ -73,7 +73,7 @@ public class PanelPlanning extends JPanel{
             Connection co = coMySQL.getConnection();
             
             Statement stmt = co.createStatement();
-            String query = "SELECT * FROM `MATCH`";
+            String query = "SELECT * FROM `MATCH`;";
             ResultSet rs = stmt.executeQuery(query);
             
             while(rs.next()){

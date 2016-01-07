@@ -48,12 +48,12 @@ public class Match{
         Statement stmt = co.createStatement();
         int i = 0;
         //cas avec 2 joueurs (simple)
-        query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM ASSIGNEMENT_MATCH WHERE id_match = " + id_match + ");";
+        query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id_match + ");";
         ResultSet rs = stmt.executeQuery(query);
         
         //On parcours les 2 joueurs du match
         while(rs.next()){
-            int id_joueur = rs.getInt("MATCH.id_joueur");
+            int id_joueur = rs.getInt("id_joueur");
             String nom_joueur = rs.getString("nom_joueur");
             String prenom_joueur = rs.getString("prenom_joueur");
             String qualification = rs.getString("qualification");
@@ -92,7 +92,7 @@ public class Match{
                                         rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
                                         rs.getString("prenom_joueur"), 
-                                        rs.getString("quelification"), 
+                                        rs.getString("qualification"), 
                                         rs.getString("nationalite"), 
                                         rs.getString("sexe")));
                 }
@@ -104,7 +104,7 @@ public class Match{
                                         rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
                                         rs.getString("prenom_joueur"), 
-                                        rs.getString("quelification"), 
+                                        rs.getString("qualification"), 
                                         rs.getString("nationalite"), 
                                         rs.getString("sexe")));
                 }
@@ -123,7 +123,7 @@ public class Match{
     }
     
     public void findArbitreChaise() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Chaise AND id_match = " + id_match;
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Chaise AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
@@ -141,7 +141,7 @@ public class Match{
     }
     
     public void findArbitreFilet() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Filet AND id_match = " + id_match;
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Filet AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
@@ -159,7 +159,7 @@ public class Match{
     }
     
     public void findArbitresLigne() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Ligne AND id_match = " + id_match;
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Ligne AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
@@ -178,7 +178,7 @@ public class Match{
     }
     
     public void findRamasseurs() throws SQLException{
-        String query = "SELECT * FROM RAMASSEUR WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match;
+        String query = "SELECT * FROM RAMASSEUR WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
