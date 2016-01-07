@@ -62,11 +62,11 @@ public class Match{
             String nationalite = rs.getString("nationalite");
             String sexe = rs.getString("sexe");
             if(i ==0){
-                participant1.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+                participant1.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
                 i++;
             }
             else{
-                participant2.add(new Joueur(id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+                participant2.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
             }
         }
         rs.close();
@@ -90,7 +90,8 @@ public class Match{
             //On parcours les joueurs de l'équipe. Si on est dans l'équipe 1
             if(i == 0){
                 while(rs2.next()){
-                    participant1.add(new Joueur(rs.getInt("id_joueur"), 
+                    participant1.add(new Joueur(co,
+                                        rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
                                         rs.getString("prenom_joueur"), 
                                         rs.getString("quelification"), 
@@ -101,7 +102,8 @@ public class Match{
             //Si on est dfans l'équipe 2
             else{
                 while(rs2.next()){
-                    participant2.add(new Joueur(rs.getInt("id_joueur"), 
+                    participant2.add(new Joueur(co,
+                                        rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
                                         rs.getString("prenom_joueur"), 
                                         rs.getString("quelification"), 
@@ -136,18 +138,62 @@ public class Match{
                                     rs.getString("rank_arbitre"),
                                     rs.getString("nationalite")
                                     );
+        rs.close();
+        stmt.close();
     }
     
-    public void findArbitreFilet(){
+    public void findArbitreFilet() throws SQLException{
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Filet AND id_match = " + id_match;
+        Statement stmt = co.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
         
+        rs.next();
+        arbitreChaise = new Arbitre(
+                                    co,
+                                    rs.getInt("id_arbitre"),
+                                    rs.getString("nom_arbitre"),
+                                    rs.getString("prenom_arbitre"),
+                                    rs.getString("rank_arbitre"),
+                                    rs.getString("nationalite")
+                                    );
+        rs.close();
+        stmt.close();
     }
     
-    public void findArbitresLigne(){
+    public void findArbitresLigne() throws SQLException{
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Ligne AND id_match = " + id_match;
+        Statement stmt = co.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
         
+        while(rs.next()){
+            arbitresLigne.add(new Arbitre(
+                                        co,
+                                        rs.getInt("id_arbitre"),
+                                        rs.getString("nom_arbitre"),
+                                        rs.getString("prenom_arbitre"),
+                                        rs.getString("rank_arbitre"),
+                                        rs.getString("nationalite")
+                                        ));
+        }
+        rs.close();
+        stmt.close();
     }
     
-    public void findRamasseurs(){
+    public void findRamasseurs() throws SQLException{
+        String query = "SELECT * FROM RAMASSEUR WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match;
+        Statement stmt = co.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
         
+        while(rs.next()){
+            ramasseurs.add(new Ramasseur(
+                                        co,
+                                        rs.getInt("id_ramasseur"),
+                                        rs.getString("nom_ramasseur"),
+                                        rs.getString("prenom_ramasseur")
+                                        ));
+        }
+        rs.close();
+        stmt.close();
     }
     
     @Override

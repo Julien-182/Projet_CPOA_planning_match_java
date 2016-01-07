@@ -82,7 +82,7 @@ public class Joueur extends Participant{
                                          + "WHERE id_match IN("
                                                                + "SELECT id_match"
                                                                + " FROM MATCHS "
-                                                               + "WHERE date_match = date AND creneau_match = creneau"
+                                                               + "WHERE date_match = " + date + "AND creneau_match = " + creneau
                                         + ")");
         if(rset.next()) dispo =  false;
         else dispo = true;

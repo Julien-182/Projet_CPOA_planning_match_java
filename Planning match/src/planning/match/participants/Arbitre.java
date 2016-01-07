@@ -19,16 +19,13 @@ public class Arbitre {
     private int nbSimple;
     private int nbDouble;
     
-    public Arbitre(Connection co,int id_arbitre, String nom, String prenom, String rank_arbitre, String nationalite, 
-                    int nbSimple, int nbDouble){
+    public Arbitre(Connection co,int id_arbitre, String nom, String prenom, String rank_arbitre, String nationalite){
         this.co = co;
         this.id_arbitre = id_arbitre;
         this.nom = nom;
         this.prenom = prenom;
         this.rank_arbitre = rank_arbitre;
         this.nationalite = nationalite;
-        this.nbSimple = nbSimple;
-        this.nbDouble = nbDouble;
     }
 
     @Override
@@ -138,7 +135,7 @@ public class Arbitre {
                                          + "WHERE id_match IN("
                                                                + "SELECT id_match"
                                                                + " FROM MATCHS "
-                                                               + "WHERE date_match = date AND creneau_match = creneau"
+                                                               + "WHERE date_match = " + date + "AND creneau_match = " + creneau
                                         + ")");
         if(rset.next()) dispo =  false;
         else dispo = true;
