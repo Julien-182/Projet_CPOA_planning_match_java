@@ -71,7 +71,7 @@ public class PanelPlanning extends JPanel{
             List<Match> liste_matchs = new ArrayList<>();
             ConnectionMySQL coMySQL = new ConnectionMySQL();
             Connection co = coMySQL.getConnection();
-            
+            System.out.println("...");
             Statement stmt = co.createStatement();
             String query = "SELECT * FROM `MATCH`;";
             ResultSet rs = stmt.executeQuery(query);
@@ -88,6 +88,8 @@ public class PanelPlanning extends JPanel{
                 ));
             }
             
+            rs.close();
+            stmt.close();
             return liste_matchs;
         } catch (SQLException ex) {
             Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);

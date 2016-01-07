@@ -23,6 +23,11 @@ public class PlanningModel extends AbstractTableModel{
     public int getColumnCount() {
         return titres.length;
     }
+    
+    @Override
+    public String getColumnName(int index){
+        return titres[index];
+    }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {

@@ -22,7 +22,7 @@ public class Match{
     private int id_court;
     
     //Valeurs à trouver grâce aux méthodes
-    private Arbitre arbitreChaise, arbitreFilet;
+    private Arbitre arbitreChaise = null, arbitreFilet = null;
     private List<Arbitre> arbitresLigne = new ArrayList<>();
     private List<Ramasseur> ramasseurs = new ArrayList<>();
     private List<Joueur> participant1 = new ArrayList<>();
@@ -30,6 +30,7 @@ public class Match{
     
     public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour, int id_court) throws SQLException{
         this.co = co;
+        this.id_match = id_match;
         this.date = date;   
         this.creneau = creneau;
         this.categorie_match = categorie;
@@ -48,11 +49,14 @@ public class Match{
         Statement stmt = co.createStatement();
         int i = 0;
         //cas avec 2 joueurs (simple)
-        query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id_match + ");";
+        query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur\n" +
+                                                         "FROM ASSIGNEMENT_JOUEUR\n" +
+                                                         "WHERE id_match = " + id_match + ");";
         ResultSet rs = stmt.executeQuery(query);
         
         //On parcours les 2 joueurs du match
         while(rs.next()){
+            System.out.println("On est dans la boucle");
             int id_joueur = rs.getInt("id_joueur");
             String nom_joueur = rs.getString("nom_joueur");
             String prenom_joueur = rs.getString("prenom_joueur");
@@ -123,43 +127,45 @@ public class Match{
     }
     
     public void findArbitreChaise() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Chaise AND id_match = " + id_match + ");";
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = 'Chaise' AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
-        rs.next();
-        arbitreChaise = new Arbitre(
-                                    co,
-                                    rs.getInt("id_arbitre"),
-                                    rs.getString("nom_arbitre"),
-                                    rs.getString("prenom_arbitre"),
-                                    rs.getString("rank_arbitre"),
-                                    rs.getString("nationalite")
-                                    );
+        if(rs.next()){
+            arbitreChaise = new Arbitre(
+                                        co,
+                                        rs.getInt("id_arbitre"),
+                                        rs.getString("nom_arbitre"),
+                                        rs.getString("prenom_arbitre"),
+                                        rs.getString("rank_arbitre"),
+                                        rs.getString("nationalite")
+                                        );
+        }
         rs.close();
         stmt.close();
     }
     
     public void findArbitreFilet() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Filet AND id_match = " + id_match + ");";
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = 'Filet' AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
-        rs.next();
-        arbitreChaise = new Arbitre(
-                                    co,
-                                    rs.getInt("id_arbitre"),
-                                    rs.getString("nom_arbitre"),
-                                    rs.getString("prenom_arbitre"),
-                                    rs.getString("rank_arbitre"),
-                                    rs.getString("nationalite")
-                                    );
+        if(rs.next()){
+            arbitreChaise = new Arbitre(
+                                        co,
+                                        rs.getInt("id_arbitre"),
+                                        rs.getString("nom_arbitre"),
+                                        rs.getString("prenom_arbitre"),
+                                        rs.getString("rank_arbitre"),
+                                        rs.getString("nationalite")
+                                        );
+        }
         rs.close();
         stmt.close();
     }
     
     public void findArbitresLigne() throws SQLException{
-        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Ligne AND id_match = " + id_match + ");";
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = 'Ligne' AND id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
@@ -178,7 +184,7 @@ public class Match{
     }
     
     public void findRamasseurs() throws SQLException{
-        String query = "SELECT * FROM RAMASSEUR WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match + ");";
+        String query = "SELECT * FROM RAMASSEUR WHERE id_ramasseur IN (SELECT id_ramasseur FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
@@ -229,11 +235,10 @@ public class Match{
         for(Joueur joueur : participant1){
             joueurs += joueur.getNom_joueur() + " ";
         }
-        joueurs += "\nVS\n";
-        for(Joueur joueur : participant1){
+        joueurs += "\nVS \n";
+        for(Joueur joueur : participant2){
             joueurs += joueur.getNom_joueur() + " ";
         }
-        
         return joueurs;
     }
     
