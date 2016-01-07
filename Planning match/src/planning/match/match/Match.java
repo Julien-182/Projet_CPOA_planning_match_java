@@ -116,7 +116,33 @@ public class Match{
         stmt2.close();
     }
     
-    public void findArbitres(){
+    public void findArbitres() throws SQLException{
+        findArbitreChaise(); //categorie_arbitre = Chaise
+        findArbitreFilet(); //categorie_arbitre = Filet
+        findArbitresLigne(); // categoriearbitre = Ligne
+    }
+    
+    public void findArbitreChaise() throws SQLException{
+        String query = "SELECT * FROM ARBITRE WHERE id_arbitre IN (SELECT id_arbitre FROM ASSIGNEMENT_ARBITRE WHERE categorie_arbitre = Chaise AND id_match = " + id_match;
+        Statement stmt = co.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        
+        rs.next();
+        arbitreChaise = new Arbitre(
+                                    co,
+                                    rs.getInt("id_arbitre"),
+                                    rs.getString("nom_arbitre"),
+                                    rs.getString("prenom_arbitre"),
+                                    rs.getString("rank_arbitre"),
+                                    rs.getString("nationalite")
+                                    );
+    }
+    
+    public void findArbitreFilet(){
+        
+    }
+    
+    public void findArbitresLigne(){
         
     }
     
