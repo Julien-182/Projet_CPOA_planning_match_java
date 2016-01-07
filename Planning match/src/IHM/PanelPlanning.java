@@ -39,11 +39,9 @@ public class PanelPlanning extends JPanel{
     public void initComponent(){
         //Tableau planning
         String[] columnName = {"Date", "Créneau", "Catégorie", "Tour","Participant","Court"};
-        String[][] datas = {
-            {"8 Janvier", "8am", "Simple Homme", "Demi-finale", "dedede","dede"},
-            {"9 Janvier", "11am", "Double Femme", "Qualifications","dedede","deded"}
-        };
-        planning = new JTable(datas,columnName);   
+        List<Match> data = getMatchInfos();
+        PlanningModel planningModel = new PlanningModel(data,columnName);
+        planning = new JTable(planningModel);   
         
         //Boutons d'actions
         buttons = new JPanel();
@@ -68,7 +66,34 @@ public class PanelPlanning extends JPanel{
      * @return Les données de la BDD des matchs sous formes d'un tableau d'Object
      * Chaque ligne du tableau correspond à [Date,Créneau,Categorie,Tour,Participants,Court]
      */
-    private void getMatchInfos(){}
+    private List<Match> getMatchInfos(){
+        try {
+            List<Match> liste_matchs = new ArrayList<>();
+            ConnectionMySQL coMySQL = new ConnectionMySQL();
+            Connection co = coMySQL.getConnection();
+            
+            Statement stmt = co.createStatement();
+            String query = "SELECT * FROM `MATCH`";
+            ResultSet rs = stmt.executeQuery(query);
+            
+            while(rs.next()){
+                liste_matchs.add(new Match(
+                        co,
+                        rs.getInt("id_match"),
+                        rs.getDate("date_match"),
+                        rs.getString("creneau_match"),
+                        rs.getString("categorie_match"),
+                        rs.getString("tour_match"),
+                        rs.getInt("id_court")
+                ));
+            }
+            
+            return liste_matchs;
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     
     private class AjouterActionListener implements ActionListener{
 

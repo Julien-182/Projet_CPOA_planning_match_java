@@ -48,14 +48,12 @@ public class Match{
         Statement stmt = co.createStatement();
         int i = 0;
         //cas avec 2 joueurs (simple)
-        query = "SELECT * "
-                + "FROM JOUEUR,ASSIGNEMENT_JOUEUR "
-                + "WHERE ASSIGNEMENT_JOUEUR.id_match = " + id_match + "AND JOUEUR.id_joueur = ASSIGNEMENT_JOUEUR.id_joueur";
+        query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM ASSIGNEMENT_MATCH WHERE id_match = " + id_match + ");";
         ResultSet rs = stmt.executeQuery(query);
         
         //On parcours les 2 joueurs du match
         while(rs.next()){
-            int id_joueur = rs.getInt("id_joueur");
+            int id_joueur = rs.getInt("MATCH.id_joueur");
             String nom_joueur = rs.getString("nom_joueur");
             String prenom_joueur = rs.getString("prenom_joueur");
             String qualification = rs.getString("qualification");
@@ -79,13 +77,13 @@ public class Match{
         Statement stmt = co.createStatement();
         Statement stmt2 = co.createStatement();
         
-        query = "SELECT id_equipe FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id_match;
+        query = "SELECT id_equipe FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id_match + ";";
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()){
             //Parcours chaque equipe
             id_equipe = rs.getInt("id_equipe");
             
-            query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM EQUIPE WHERE id_equipe = " + id_equipe;
+            query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
             ResultSet rs2 = stmt2.executeQuery(query);
             //On parcours les joueurs de l'équipe. Si on est dans l'équipe 1
             if(i == 0){
@@ -207,6 +205,36 @@ public class Match{
     
     public int getId_match() {
         return id_match;
+    }
+    
+    public String getCreneau(){
+        return this.creneau;
+    }
+    
+    public String getTour(){
+        return this.tour;
+    }
+    
+    public String getCategorie(){
+        return this.categorie_match;
+    }
+    
+    public int getCourt(){
+        return this.id_court;
+    }
+    
+    public String getJoueursToString(){
+        String joueurs = "";
+        
+        for(Joueur joueur : participant1){
+            joueurs += joueur.getNom_joueur() + " ";
+        }
+        joueurs += "\nVS\n";
+        for(Joueur joueur : participant1){
+            joueurs += joueur.getNom_joueur() + " ";
+        }
+        
+        return joueurs;
     }
     
     public boolean isMatchSimple(){
