@@ -21,29 +21,29 @@ public class Match{
     private String creneau;
     private String categorie_match;
     private String tour;
-    private int id_court;
+    private String court;
     
     //Valeurs à trouver grâce aux méthodes
     private Arbitre arbitreChaise = null, arbitreFilet = null;
     private List<Arbitre> arbitresLigne = new ArrayList<>();
-    private List<Ramasseur> ramasseurs = new ArrayList<>();
+    private EquipeRamasseurs equipe_ramasseurs;
     private List<Joueur> participant1 = new ArrayList<>();
     private List<Joueur> participant2 = new ArrayList<>();
     
-    public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour, int id_court) throws SQLException{
+    public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour) throws SQLException{
         this.co = co;
         this.id_match = id_match;
         this.date = date;   
         this.creneau = creneau;
         this.categorie_match = categorie;
         this.tour = tour;
-        this.id_court = id_court;
         if(isMatchSimple())
             findJoueurs();
         else
             findEquipe();
         findArbitres();
-        findRamasseurs();
+        findEquipeRamasseurs();
+        findCourt();
     }
 
     public void findJoueurs() throws SQLException{
@@ -184,19 +184,34 @@ public class Match{
         stmt.close();
     }
     
-    public void findRamasseurs() throws SQLException{
-        String query = "SELECT * FROM RAMASSEUR WHERE id_ramasseur IN (SELECT id_ramasseur FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match + ");";
+    public void findEquipeRamasseurs() throws SQLException{
+        //String query = "SELECT * FROM RAMASSEUR WHERE id_ramasseur IN (SELECT id_ramasseur FROM ASSIGNEMENT_RAMASSEUR WHERE id_match = " + id_match + ");";
+        String query = "SELECT * FROM EQUIPE_RAMASSEURS WHERE id_equipe_ramasseurs IN ("
+                                                                                    + "SELECT id_equipe_ramasseurs"
+                                                                                    + " FROM ASSIGNEMENT_EQUIPE_RAMASSEURS"
+                                                                                    + " WHERE id_match = " + id_match + ");";
         Statement stmt = co.createStatement();
         ResultSet rs = stmt.executeQuery(query);
         
-        while(rs.next()){
-            ramasseurs.add(new Ramasseur(
-                                        co,
-                                        rs.getInt("id_ramasseur"),
-                                        rs.getString("nom_ramasseur"),
-                                        rs.getString("prenom_ramasseur")
-                                        ));
+        if(rs.next()){
+            equipe_ramasseurs = new EquipeRamasseurs(
+                                            co,
+                                            rs.getInt("id_equipe_ramasseurs"),
+                                            rs.getString("nom_equipe")
+                                    );
         }
+        rs.close();
+        stmt.close();
+    }
+    
+    public void findCourt() throws SQLException{
+        String query = "SELECT nom_court FROM COURT WHERE id_court IN (SELECT id_court FROM ASSIGNEMENT_COURT WHERE id_match = " + id_match + ");";
+        Statement stmt = co.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        
+        if(rs.next())
+            this.court = rs.getString("nom_court");
+        
         rs.close();
         stmt.close();
     }
@@ -204,9 +219,9 @@ public class Match{
     @Override
     public String toString() {
         return "Match{" + "id_match=" + id_match + ", date=" + date + ", creneau=" + creneau + ", categorie_match=" 
-                + categorie_match + ", tour=" + tour + ", court=" + id_court + ", arbitreChaise=" + arbitreChaise 
+                + categorie_match + ", tour=" + tour + ", court=" + court + ", arbitreChaise=" + arbitreChaise 
                 + ", arbitreFilet=" + arbitreFilet + ", arbitresLigne=" + arbitresLigne + ", ramasseurs=" 
-                + ramasseurs + ", participant1=" + participant1 
+                + equipe_ramasseurs + ", participant1=" + participant1 
                 + ", participant2=" + participant2 + '}';
     }
     
@@ -226,8 +241,8 @@ public class Match{
         return this.categorie_match;
     }
     
-    public int getCourt(){
-        return this.id_court;
+    public String getCourt(){
+        return this.court;
     }
     
     public String getJoueursToString(){
@@ -300,7 +315,7 @@ public class Match{
         try {
             Statement stmt = co.createStatement();
             String query = "INSERT INTO `MATCH`(date_match,creneau_match,categorie_match,tour_match,id_court) "
-                            + "VALUES (" + this.date + "," + this.creneau + "," + this.categorie_match + "," + this.tour + "," + this.id_court +");";
+                            + "VALUES (" + this.date + "," + this.creneau + "," + this.categorie_match + "," + this.tour + ");";
         } catch (SQLException ex) {
             Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);
         }

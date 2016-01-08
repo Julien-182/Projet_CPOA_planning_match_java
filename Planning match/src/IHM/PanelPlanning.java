@@ -30,9 +30,12 @@ public class PanelPlanning extends JPanel{
     private JPanel buttons;
     private JButton ajouterButton, editerButton, supprimerButton;
     
-    public PanelPlanning(){
-        this.setPreferredSize(new Dimension(100,650));
+    private Connection co;
+    
+    public PanelPlanning(Connection p_co){
+        this.setPreferredSize(new Dimension(1000,650));
         this.setLayout(new BorderLayout());
+        this.co = p_co;
         initComponent();
     }
     
@@ -69,8 +72,6 @@ public class PanelPlanning extends JPanel{
     private List<Match> getMatchInfos(){
         List<Match> liste_matchs = new ArrayList<>();
         try {
-            ConnectionMySQL coMySQL = new ConnectionMySQL();
-            Connection co = coMySQL.getConnection();
             if(co != null){
                 System.out.println("....");
                 Statement stmt = co.createStatement();
@@ -84,8 +85,7 @@ public class PanelPlanning extends JPanel{
                             rs.getDate("date_match"),
                             rs.getString("creneau_match"),
                             rs.getString("categorie_match"),
-                            rs.getString("tour_match"),
-                            rs.getInt("id_court")
+                            rs.getString("tour_match")
                     ));
                 }
 
@@ -117,7 +117,7 @@ public class PanelPlanning extends JPanel{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            
         } 
     }
     
@@ -125,8 +125,7 @@ public class PanelPlanning extends JPanel{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-        
+           
+        }       
     }
 }

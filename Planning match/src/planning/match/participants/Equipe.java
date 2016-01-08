@@ -60,6 +60,5 @@ public class Equipe extends Participant{
     
     public boolean estDisponible(Date date, String creneau) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
         return joueur1.estDisponible(date, creneau) && joueur2.estDisponible(date, creneau);
-    }
-    
+    }   
 }

@@ -41,6 +41,5 @@ public class PlanningModel extends AbstractTableModel{
             case(5): return match.getCourt();
             default : return "";
         }
-    }
-    
+    }   
 }
