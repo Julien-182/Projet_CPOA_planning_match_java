@@ -3,6 +3,7 @@ package bdd;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class ConnectionMySQL {
     
@@ -25,13 +26,15 @@ public class ConnectionMySQL {
             
             //STEP 3: Open a connection
             System.out.println("Connecting to database...");
+            
             conn = DriverManager.getConnection(DB_URL,USER,PASS);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ConnectionMySQL.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(ConnectionMySQL.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("SUCCESS");
+        if(conn != null)
+            JOptionPane.showMessageDialog(null,"Succès de la connection à la base de données !");
+        else
+            JOptionPane.showMessageDialog(null,"La connection à la base de données a echoué :/");
         return conn;
     }
 }

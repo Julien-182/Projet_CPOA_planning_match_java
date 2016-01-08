@@ -8,6 +8,8 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Match{
@@ -56,7 +58,6 @@ public class Match{
         
         //On parcours les 2 joueurs du match
         while(rs.next()){
-            System.out.println("On est dans la boucle");
             int id_joueur = rs.getInt("id_joueur");
             String nom_joueur = rs.getString("nom_joueur");
             String prenom_joueur = rs.getString("prenom_joueur");
@@ -295,12 +296,13 @@ public class Match{
         return date;
     }
 
-    public void setId_match(int id_match) {
-        this.id_match = id_match;
+    public void addToDataBase(){
+        try {
+            Statement stmt = co.createStatement();
+            String query = "INSERT INTO `MATCH`(date_match,creneau_match,categorie_match,tour_match,id_court) "
+                            + "VALUES (" + this.date + "," + this.creneau + "," + this.categorie_match + "," + this.tour + "," + this.id_court +");";
+        } catch (SQLException ex) {
+            Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    public void setDate(Date date){
-        this.date = date;
-    }
-    
 }

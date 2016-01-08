@@ -67,41 +67,49 @@ public class PanelPlanning extends JPanel{
      * Chaque ligne du tableau correspond à [Date,Créneau,Categorie,Tour,Participants,Court]
      */
     private List<Match> getMatchInfos(){
+        List<Match> liste_matchs = new ArrayList<>();
         try {
-            List<Match> liste_matchs = new ArrayList<>();
             ConnectionMySQL coMySQL = new ConnectionMySQL();
             Connection co = coMySQL.getConnection();
-            System.out.println("...");
-            Statement stmt = co.createStatement();
-            String query = "SELECT * FROM `MATCH`;";
-            ResultSet rs = stmt.executeQuery(query);
-            
-            while(rs.next()){
-                liste_matchs.add(new Match(
-                        co,
-                        rs.getInt("id_match"),
-                        rs.getDate("date_match"),
-                        rs.getString("creneau_match"),
-                        rs.getString("categorie_match"),
-                        rs.getString("tour_match"),
-                        rs.getInt("id_court")
-                ));
+            if(co != null){
+                System.out.println("....");
+                Statement stmt = co.createStatement();
+                String query = "SELECT * FROM `MATCH`;";
+                ResultSet rs = stmt.executeQuery(query);
+
+                while(rs.next()){
+                    liste_matchs.add(new Match(
+                            co,
+                            rs.getInt("id_match"),
+                            rs.getDate("date_match"),
+                            rs.getString("creneau_match"),
+                            rs.getString("categorie_match"),
+                            rs.getString("tour_match"),
+                            rs.getInt("id_court")
+                    ));
+                }
+
+                rs.close();
+                stmt.close();
             }
-            
-            rs.close();
-            stmt.close();
-            return liste_matchs;
         } catch (SQLException ex) {
             Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return liste_matchs;
     }
     
     private class AjouterActionListener implements ActionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            /*
+                Afficher fenêtre dialog --> choix date parmi les dates disponibles (où il n'y a pas les 6 créneau occupés)
+                Afficher fenêtre dialog --> choix créneau parmi ceux disponible dans la journée
+                Afficher fenêtre dialog --> choisir categorie du match 
+                Afficher fenêtre dialog --> choisir tour du match
+                Afficher fenêtre dialog --> choisir les deux joueurs parmi ceux qui sont disponibles et ceux qualifiés pour le tour du match
+                Afficher fenêtre dialog --> choisir le court du match
+            */
         }    
     }
     
