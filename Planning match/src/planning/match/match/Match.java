@@ -61,15 +61,14 @@ public class Match{
             int id_joueur = rs.getInt("id_joueur");
             String nom_joueur = rs.getString("nom_joueur");
             String prenom_joueur = rs.getString("prenom_joueur");
-            String qualification = rs.getString("qualification");
             String nationalite = rs.getString("nationalite");
             String sexe = rs.getString("sexe");
             if(i ==0){
-                participant1.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+                participant1.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur, nationalite, sexe));
                 i++;
             }
             else{
-                participant2.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur,qualification, nationalite, sexe));
+                participant2.add(new Joueur(co,id_joueur,nom_joueur,prenom_joueur, nationalite, sexe));
             }
         }
         rs.close();
@@ -96,8 +95,7 @@ public class Match{
                     participant1.add(new Joueur(co,
                                         rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
-                                        rs.getString("prenom_joueur"), 
-                                        rs.getString("qualification"), 
+                                        rs.getString("prenom_joueur"),
                                         rs.getString("nationalite"), 
                                         rs.getString("sexe")));
                 }
@@ -109,7 +107,6 @@ public class Match{
                                         rs.getInt("id_joueur"), 
                                         rs.getString("nom_joueur"), 
                                         rs.getString("prenom_joueur"), 
-                                        rs.getString("qualification"), 
                                         rs.getString("nationalite"), 
                                         rs.getString("sexe")));
                 }

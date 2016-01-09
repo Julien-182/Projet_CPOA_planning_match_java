@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import planning.match.match.Match;
 
 public class Arbitre {
     
@@ -26,6 +27,10 @@ public class Arbitre {
         this.prenom = prenom;
         this.rank_arbitre = rank_arbitre;
         this.nationalite = nationalite;
+    }
+    
+    public void assignerAMatch(Match match){
+        
     }
 
     @Override

@@ -200,3 +200,12 @@ CREATE TABLE ASSIGNEMENT_EQUIPE(
 	FOREIGN KEY (id_match) REFERENCES MATCHS(id_match),
 	FOREIGN KEY (id_equipe) REFERENCES EQUIPE(id_equipe)
 );
+/*----------------------------------------------------------------------*/
+CREATE TABLE GAGNANT
+(
+    id_match INT(5),
+    id_joueur INT(5)
+);
+ALTER TABLE GAGNANT ADD CONSTRAINT pk_gagnant PRIMARY KEY (id_match,id_joueur);
+ALTER TABLE GAGNANT ADD CONSTRAINT fk_gagnant1 FOREIGN KEY (id_match) REFERENCES `MATCH`(id_match);
+ALTER TABLE GAGNANT ADD CONSTRAINT fk_gagnant2 FOREIGN KEY (id_joueur) REFERENCES JOUEUR(id_joueur);

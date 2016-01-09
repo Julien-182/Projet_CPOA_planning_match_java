@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import planning.match.match.Match;
 
 public class EquipeRamasseurs {
 
@@ -45,6 +46,10 @@ public class EquipeRamasseurs {
                                         prenom
                                      ));
         }
+    }
+    
+    public void assignerAMatch(Match match){
+        
     }
     
     public List<Ramasseur> getRamasseurs(){

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import planning.match.match.Match;
 
 public class Equipe extends Participant{
     
@@ -26,6 +27,10 @@ public class Equipe extends Participant{
         this.joueur2 = j2;
     }
 
+    public void assignerAMatch(Match match){
+        
+    }
+    
     public int getId_equipe() {
         return id_equipe;
     }
