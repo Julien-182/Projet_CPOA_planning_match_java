@@ -242,13 +242,13 @@ public class PanelPlanning extends JPanel{
             
             try {
                 Statement stmt = co.createStatement();
-                String query  = "SELECT COUNT( id_match ) AS nb_match FROM  `MATCH`" +
+                String query  = "SELECT COUNT( id_match ) FROM  `MATCH`" +
                                                                 " WHERE date_match = STR_TO_DATE( " + date_match + ",  '%Y-%m-%d' )";               
                 ResultSet rs = stmt.executeQuery(query);
                 rs.next();
-                
+                System.out.println(date_match);
                 //24 = 4 courts * 6 creneaux = 24 matchs/jour possibles
-                if(rs.getInt("nb_match") == Creneau.values().length * 4) choixDate();
+                if(rs.getInt(1) == Creneau.values().length * 4) choixDate();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -263,12 +263,12 @@ public class PanelPlanning extends JPanel{
            
             try {
                 Statement stmt = co.createStatement();
-                String query  = "SELECT COUNT( id_match ) AS nb_match FROM  `MATCH`" +
-                                                                " WHERE date_match =  " + date_match  +
+                String query  = "SELECT COUNT(id_match) FROM  `MATCH`" +
+                                                                " WHERE date_match =  '" + date_match  + "' " +
                                                                 " AND creneau_match = " + creneau + ";";                
                 ResultSet rs = stmt.executeQuery(query);
                 if(rs.next()){
-                    if(rs.getInt("nb_match") == 4) 
+                    if(rs.getInt(1) == 4) 
                         choixCreneau(date_match);
                 }
             } catch (SQLException ex) {

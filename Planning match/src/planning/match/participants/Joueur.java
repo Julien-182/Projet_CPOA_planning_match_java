@@ -106,13 +106,12 @@ public class Joueur extends Participant{
             Boolean dispo;
             
             Statement stmt = this.co.createStatement();
-            System.out.println(date.getClass());
             ResultSet rset = stmt.executeQuery("SELECT id_joueur "
                     + "FROM ASSIGNEMENT_JOUEUR "
                     + "WHERE id_match IN("
                     + "SELECT id_match"
                     + " FROM `MATCH` "
-                    + "WHERE date_match = " + date + " AND creneau_match = " + creneau
+                    + "WHERE date_match = '" + date + "' AND creneau_match = " + creneau
                     + ");");
             if(rset.next()) dispo =  false;
             else dispo = true;
