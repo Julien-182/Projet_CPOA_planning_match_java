@@ -1,0 +1,17 @@
+//Suppression arbitre
+DELETE FROM ASSIGNEMENT_ARBITRE WHERE id_match = id_match
+
+//Suppression court
+DELETE FROM ASSIGNEMENT_COURT WHERE id_match = id_match
+
+//Suppression equipe ramasseur
+DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEUR WHERE id_match = id_match
+
+//Suppression equipe
+DELETE FROM ASSIGNEMENT_EQUIPE WHERE id_match = id_match
+
+//Suppression joueur
+DELETE FROM ASSIGNEMENT_JOUEUR WHERE id_match = id_match
+
+//Suppression match
+DELETE FROM MATCH WHERE id_match = id_match
