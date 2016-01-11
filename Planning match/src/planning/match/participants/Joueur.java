@@ -64,29 +64,65 @@ public class Joueur extends Participant{
         return sexe;
     }
     
+    public boolean estQualifie(String tour){
+        boolean qualifie = false;
+        String tour_precedent = getTourPrecedent(tour);
+        //Si on est au premier tour, le joueur est qualifie direct
+        if(tour_precedent.equals("Rien")) return true;
+        try {
+            Statement stmt = co.createStatement();
+            String query = "SELECT id_joueur FROM GAGNANT_SIMPLE WHERE id_match IN(SELECT id_match FROM MATCH WHERE tour_match = " + tour_precedent + ");";
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                if(rs.getInt("id_joueur") == this.id_joueur){
+                    qualifie = true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return qualifie;
+    }
+    
+    private String getTourPrecedent(String tour){
+        String tour_precedent = "";
+        switch(tour){
+            case "Qualification" : tour_precedent =  "Rien";
+            case "Quart de finale" : tour_precedent = "Qualification";
+            case "Demi-finale" : tour_precedent =  "Quart de finale";
+            case "Finale" : tour_precedent =  "Demi-finale";
+        }
+        return tour_precedent;
+    }
     //A FAIRE
-    public boolean estDisponible(Date date, String creneau) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
-         /*
+    public boolean estDisponible(Date date, String creneau){
+        try {
+            /*
             Recuperer tous les matchs joués pendant la date et le créneau
             Regarder dans les matchs si l'arbitre est assigné au match
-                SI OUI --> return false (pas dispo)
-                SI NON --> return true (dispo)
-        */
-        Boolean dispo;
-
-        Statement stmt = this.co.createStatement();
-        ResultSet rset = stmt.executeQuery("SELECT id_joueur "
-                                         + "FROM ASSIGNMENT_JOUEUR "
-                                         + "WHERE id_match IN("
-                                                               + "SELECT id_match"
-                                                               + " FROM MATCHS "
-                                                               + "WHERE date_match = " + date + "AND creneau_match = " + creneau
-                                        + ")");
-        if(rset.next()) dispo =  false;
-        else dispo = true;
-        
-        stmt.close();
-        rset.close();
-        return dispo;
+            SI OUI --> return false (pas dispo)
+            SI NON --> return true (dispo)
+            */
+            Boolean dispo;
+            
+            Statement stmt = this.co.createStatement();
+            System.out.println(date.getClass());
+            ResultSet rset = stmt.executeQuery("SELECT id_joueur "
+                    + "FROM ASSIGNEMENT_JOUEUR "
+                    + "WHERE id_match IN("
+                    + "SELECT id_match"
+                    + " FROM `MATCH` "
+                    + "WHERE date_match = " + date + " AND creneau_match = " + creneau
+                    + ");");
+            if(rset.next()) dispo =  false;
+            else dispo = true;
+            
+            stmt.close();
+            rset.close();
+            return dispo;
+        } catch (SQLException ex) {
+            Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 }

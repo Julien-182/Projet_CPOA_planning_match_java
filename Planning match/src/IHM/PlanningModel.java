@@ -28,7 +28,11 @@ public class PlanningModel extends AbstractTableModel{
     public String getColumnName(int index){
         return titres[index];
     }
-
+    
+    public Match getRowAt(int index){
+        return data.get(index);
+    }
+    
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Match match = data.get(rowIndex);

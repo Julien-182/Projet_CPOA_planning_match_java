@@ -8,13 +8,18 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -22,6 +27,7 @@ import planning.match.match.Court;
 import planning.match.match.Creneau;
 import planning.match.match.Date_Match;
 import planning.match.match.Match;
+import planning.match.match.Tour;
 import planning.match.participants.*;
 
 /**
@@ -31,11 +37,13 @@ import planning.match.participants.*;
 public class PanelPlanning extends JPanel{
     
     private JTable planning;
+    PlanningModel planningModel;
     private JPanel buttons;
     private JButton ajouterButton, editerButton, supprimerButton;
     
     private List<Match> data;
     private List<Joueur> joueur_collection;
+    private List<Equipe> equipe_collection;
     private List<Arbitre> arbitre_collection;
     private List<EquipeRamasseurs> ramasseurs_collection;
     
@@ -44,15 +52,16 @@ public class PanelPlanning extends JPanel{
     public PanelPlanning(Connection p_co){
         this.setPreferredSize(new Dimension(1000,650));
         this.setLayout(new BorderLayout());
-        this.co = p_co;
+        this.co = p_co;     
         initComponent();
+        initCollections();
     }
     
     public void initComponent(){
         //Tableau planning
         String[] columnName = {"Date", "Créneau", "Catégorie", "Tour","Participant","Court"};
         data = getMatchInfos();
-        PlanningModel planningModel = new PlanningModel(data,columnName);
+        planningModel = new PlanningModel(data,columnName);
         planning = new JTable(planningModel);   
         
         //Boutons d'actions
@@ -63,6 +72,7 @@ public class PanelPlanning extends JPanel{
         ajouterButton.addActionListener(new AjouterActionListener());
         editerButton = new JButton("Editer");
         supprimerButton = new JButton("Supprimer");
+        supprimerButton.addActionListener(new SupprimerActionListener());
         
         this.add(new JScrollPane(planning), BorderLayout.CENTER);
         buttons.add(new Label());buttons.add(new Label());buttons.add(new Label());
@@ -77,11 +87,13 @@ public class PanelPlanning extends JPanel{
     public void initCollections(){
 
         joueur_collection = new ArrayList<>();
+        equipe_collection = new ArrayList<>();
         arbitre_collection = new ArrayList<>();
         ramasseurs_collection = new ArrayList<>();
         try { 
             Statement stmt = co.createStatement();
             
+            // JOUEUR INIT
             String query = "SELECT * FROM JOUEUR;";
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
@@ -96,6 +108,20 @@ public class PanelPlanning extends JPanel{
             }
             rs.close();
             
+            // EQUIPE INIT
+            query = "SELECT * FROM EQUIPE";
+            rs = stmt.executeQuery(query);
+            while(rs.next()){
+                equipe_collection.add(new Equipe(
+                                        co,
+                                        rs.getInt("id_equipe"),
+                                        rs.getInt("id_joueur1"),
+                                        rs.getInt("id_joueur2")
+                                    ));
+            }
+            rs.close();
+            
+            //ARBITRE INIT
             query = "SELECT * FROM ARBITRE;";
             rs = stmt.executeQuery(query);
             
@@ -111,6 +137,7 @@ public class PanelPlanning extends JPanel{
             }
             rs.close();
             
+            //EQUIPE RAMASSEURS INIT
             query = "SELECT * FROM EQUIPE_RAMASSEURS;";
             rs = stmt.executeQuery(query);
             while(rs.next()){
@@ -174,21 +201,45 @@ public class PanelPlanning extends JPanel{
                 Afficher fenêtre dialog --> choisir le court du match
             */
             List<Date> date_dispo = new ArrayList<>();
-            Date date_match;
-            String creneau, categorie, tour;       
+            String date_string;
+            Date date_match = null;
+            String creneau, categorie, tour, court;      
+            List<Joueur> joueurs_match = new ArrayList<>();
+            List<Equipe> equipes_match = new ArrayList<>();
             
-            date_match = Date.valueOf(choixDate());
-            System.out.println("COUCOU");
+            date_string = choixDate();
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                java.util.Date date = df.parse(date_string);
+                date_match = new java.sql.Date(date.getTime());
+            } catch (ParseException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             creneau = choixCreneau(date_match);
-            
+            categorie = choixCategorie();
+            tour = choixTour();
+            court = choixCourt();     
+            if(categorie.equals("Simple Homme") ||categorie.equals("Simple Femme")){
+                joueurs_match = choixJoueur(date_match, creneau, tour); //gérer Date !!!
+            }
+            else{
+                equipes_match = choixEquipe(date_match, creneau, tour);
+            }
+            System.out.println(date_match);
+            System.out.println(creneau);
+            System.out.println(categorie);
+            System.out.println(tour);
+            System.out.println(court);
         }    
         
-        public String choixDate(){
+        public String choixDate()     {
             String date_match = null;
             
             //Choix de la date
-            date_match = (String) JOptionPane.showInputDialog(null, "Choisissez une date", "Ajout d'un match", JOptionPane.PLAIN_MESSAGE,null, Date_Match.values(), Date_Match.jour1);
-           
+            Date_Match date_match2 = (Date_Match) JOptionPane.showInputDialog(null, "Choisissez une date", "Ajout d'un match", JOptionPane.PLAIN_MESSAGE,null, Date_Match.values(), Date_Match.jour1);
+            date_match = date_match2.toString();
+            
             try {
                 Statement stmt = co.createStatement();
                 String query  = "SELECT COUNT( id_match ) AS nb_match FROM  `MATCH`" +
@@ -200,56 +251,94 @@ public class PanelPlanning extends JPanel{
                 if(rs.getInt("nb_match") == Creneau.values().length * 4) choixDate();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
-            }     
-            
+            }
             return date_match;
         }    
+        
         public String choixCreneau(Date date_match){
             String creneau = null;
             //Choix du créneau
-            creneau = (String)JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), Creneau.am_8);
+            creneau = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), Creneau.am_8).toString();
             //Vérification de la date et du créneau
            
             try {
                 Statement stmt = co.createStatement();
                 String query  = "SELECT COUNT( id_match ) AS nb_match FROM  `MATCH`" +
-                                                                " WHERE date_match = STR_TO_DATE( " + date_match + ",  '%Y-%m-%d' )" +
+                                                                " WHERE date_match =  " + date_match  +
                                                                 " AND creneau_match = " + creneau + ";";                
                 ResultSet rs = stmt.executeQuery(query);
-                rs.next();
-                
-                if(rs.getInt("nb_match") == 4) choixCreneau(date_match);
+                if(rs.next()){
+                    if(rs.getInt("nb_match") == 4) 
+                        choixCreneau(date_match);
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
-            }     
-           
+            }              
             return creneau;
-        }
+        }    
+        
         public String choixCategorie(){
             String categorie = null;
+            String[] categories = {"Simple Homme", "Simple Femme", "Double Homme", "Double Femme"};
             
-            return null;
-        }
-        public String choixTour(){
-            String tour = null;
-            
-            return tour;
-        }
-        public String choixCourt(){
-            String court = null;
-            
-            return court;
-        }
-        public Joueur choixJoueur(){
-            Joueur joueur = null;
-            
-            return joueur;
-        }
-        public Equipe choixEquipe(){
-            Equipe equipe = null;
-            return equipe;
+            categorie = (String) JOptionPane.showInputDialog(null,"Choix de la categorie","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, categories, categories[0]);
+            return categorie;
         }
         
+        public String choixTour(){
+            String tour = null;
+            tour = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Tour.values(), Tour.Qualification).toString();
+            return tour;
+        }
+        
+        public String choixCourt(){
+            String court = null;
+            String[] liste_courts = {"Grand Court de Gerlan", "Court de Saint-Andre","Moyen Court", "Golden Court"};
+            court = (String)JOptionPane.showInputDialog(null,"Choix du court","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, liste_courts, liste_courts[0]);
+            return court;
+        }
+        
+        public List<Joueur> choixJoueur(Date date_match, String creneau, String tour){
+            List<Joueur> joueurs_assignes = new ArrayList<>();
+            List<Joueur> joueurs_dispo = new ArrayList<>();
+            
+            for(Joueur j : joueur_collection){
+                    //vérifier disponibilité
+                    if(j.estDisponible(date_match, creneau) && j.estQualifie(tour)){
+                        joueurs_dispo.add(j);
+                    }
+            }
+            Joueur j1 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
+            Joueur j2 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
+            joueurs_assignes.add(j1);
+            joueurs_assignes.add(j2);
+            return joueurs_assignes;
+        }
+        
+        public List<Equipe> choixEquipe(Date date , String creneau, String tour){
+            List<Equipe> equipes_dispo = new ArrayList<>();
+            List<Equipe> equipes_assignes = new ArrayList<>();
+            
+            for(Equipe equipe : equipe_collection){
+                    if(equipe.estDisponible(date, creneau) || equipe.estQualifie(tour)){
+                        equipes_dispo.add(equipe);
+                    }
+            }       
+            
+            Equipe eq1 = (Equipe) JOptionPane.showInputDialog(null,"Choix du Equipe 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, equipes_dispo.toArray(), equipes_dispo.get(0));
+            Equipe eq2 = (Equipe) JOptionPane.showInputDialog(null,"Choix du Equipe 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, equipes_dispo.toArray(), equipes_dispo.get(0));
+            equipes_assignes.add(eq1);
+            equipes_assignes.add(eq2);
+            return equipes_assignes;
+        }  
+        
+        public void assignerArbitres(int id_match){
+            
+        }
+        
+        public void assignerRamasseurs(int id_match){
+            
+        }
     }
     
     private class EditerActionListener implements ActionListener{
@@ -264,7 +353,37 @@ public class PanelPlanning extends JPanel{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-           
+            try {
+                Match match = planningModel.getRowAt(planning.getSelectedRow());
+                int id = match.getId_match();
+                System.out.println(id);
+                
+                Statement stmt = co.createStatement();
+                //Suppression assignement arbitres
+                String query = "DELETE FROM ASSIGNEMENT_ARBITRE WHERE id_match =" + id;
+                stmt.execute(query);
+                //Suppression assignement court
+                query = "DELETE FROM ASSIGNEMENT_COURT WHERE id_match = " + id;
+                stmt.execute(query);
+                //Suppression equipe ramasseurs
+                query = "DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEUR WHERE id_match = " + id;
+                stmt.execute(query);
+                
+                //Suppression joueur ou equipe
+                if(match.isMatchSimple()){
+                    query = "DELETE FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id;
+                }
+                else{
+                    query = "DELETE FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id;
+                }
+                stmt.execute(query);
+                
+                query = "DELETE FROM MATCH WHERE id_match = " + id;
+                stmt.execute(query);
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }       
     }
 }
