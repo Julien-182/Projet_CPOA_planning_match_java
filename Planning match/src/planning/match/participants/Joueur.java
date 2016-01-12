@@ -29,11 +29,11 @@ public class Joueur extends Participant{
         this.sexe = sexe;
     }
 
-    public void assignerAMatch(Match match){
+    public void assignerAMatch(int id_match){
         try {
             Statement stmt = co.createStatement();
-            String query = "INSERT INTO ASSIGNEMENT_JOUEUR VALUES (" + match.getId_match() + "," + this.id_joueur + ");";
-            stmt.execute(query);
+            String query = "INSERT INTO ASSIGNEMENT_JOUEUR VALUES (" + id_match + "," + this.id_joueur + ");";
+            stmt.executeUpdate(query);
         } catch (SQLException ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
         }    
@@ -41,7 +41,7 @@ public class Joueur extends Participant{
     
     @Override
     public String toString() {
-        return "Joueur {" + "\nid_joueur = " + id_joueur + "\nnom_joueur = " + nom_joueur + "\nprenom_joueur = " + prenom_joueur + "\nnationalite = " + nationalite +"\nsexe = "+ sexe + " }";
+        return this.nom_joueur + " " + this.prenom_joueur + "   - " + this.getNationalite();
     }
 
     public int getId_joueur() {
@@ -64,6 +64,10 @@ public class Joueur extends Participant{
         return sexe;
     }
     
+    public boolean isHomme(){
+        return this.sexe.equals("Homme");
+    }
+    
     public boolean estQualifie(String tour){
         boolean qualifie = false;
         String tour_precedent = getTourPrecedent(tour);
@@ -71,7 +75,7 @@ public class Joueur extends Participant{
         if(tour_precedent.equals("Rien")) return true;
         try {
             Statement stmt = co.createStatement();
-            String query = "SELECT id_joueur FROM GAGNANT_SIMPLE WHERE id_match IN(SELECT id_match FROM MATCH WHERE tour_match = " + tour_precedent + ");";
+            String query = "SELECT id_joueur FROM GAGNANT_SIMPLE WHERE id_match IN (SELECT id_match FROM `MATCH` WHERE tour_match = '" + tour_precedent + "');";
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 if(rs.getInt("id_joueur") == this.id_joueur){
@@ -87,11 +91,12 @@ public class Joueur extends Participant{
     private String getTourPrecedent(String tour){
         String tour_precedent = "";
         switch(tour){
-            case "Qualification" : tour_precedent =  "Rien";
-            case "Quart de finale" : tour_precedent = "Qualification";
-            case "Demi-finale" : tour_precedent =  "Quart de finale";
-            case "Finale" : tour_precedent =  "Demi-finale";
+            case "Qualification" : tour_precedent =  "Rien"; break;
+            case "Quart de finale" : tour_precedent = "Qualification"; break;
+            case "Demi-finale" : tour_precedent =  "Quart de finale"; break;
+            case "Finale" : tour_precedent =  "Demi-finale"; break;
         }
+        //System.out.println("Tout précédent = " + tour_precedent);
         return tour_precedent;
     }
     //A FAIRE
@@ -103,7 +108,8 @@ public class Joueur extends Participant{
             SI OUI --> return false (pas dispo)
             SI NON --> return true (dispo)
             */
-            Boolean dispo;
+            boolean dispo = true;
+            String date_string = date.toString();
             
             Statement stmt = this.co.createStatement();
             ResultSet rset = stmt.executeQuery("SELECT id_joueur "
@@ -111,10 +117,12 @@ public class Joueur extends Participant{
                     + "WHERE id_match IN("
                     + "SELECT id_match"
                     + " FROM `MATCH` "
-                    + "WHERE date_match = '" + date + "' AND creneau_match = " + creneau
-                    + ");");
-            if(rset.next()) dispo =  false;
-            else dispo = true;
+                    + "WHERE date_match = STR_TO_DATE('" + date_string + "','yyyy-MM-dd') AND creneau_match = '" + creneau
+                    + "');");
+            while(rset.next()){
+                if(rset.getInt("id_joueur") == this.id_joueur)
+                    dispo = false;
+            }
             
             stmt.close();
             rset.close();

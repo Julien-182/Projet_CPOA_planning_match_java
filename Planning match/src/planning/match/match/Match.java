@@ -30,20 +30,24 @@ public class Match{
     private List<Joueur> participant1 = new ArrayList<>();
     private List<Joueur> participant2 = new ArrayList<>();
     
-    public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour) throws SQLException{
+    public Match(Connection co,int id_match, Date date, String creneau, String categorie, String tour){
         this.co = co;
         this.id_match = id_match;
-        this.date = date;   
+        this.date = date;
         this.creneau = creneau;
         this.categorie_match = categorie;
         this.tour = tour;
-        if(isMatchSimple())
-            findJoueurs();
-        else
-            findEquipe();
-        findArbitres();
-        findEquipeRamasseurs();
-        findCourt();
+        try {
+            if(isMatchSimple())
+                findJoueurs();
+            else
+                findEquipe();
+            findArbitres();
+            findEquipeRamasseurs();
+            findCourt();
+        } catch (SQLException ex) {
+            Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void findJoueurs() throws SQLException{

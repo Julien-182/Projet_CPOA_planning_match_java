@@ -200,14 +200,13 @@ public class PanelPlanning extends JPanel{
                 Afficher fenêtre dialog --> choisir les deux joueurs parmi ceux qui sont disponibles et ceux qualifiés pour le tour du match
                 Afficher fenêtre dialog --> choisir le court du match
             */
-            List<Date> date_dispo = new ArrayList<>();
-            String date_string;
-            Date date_match = null;
-            String creneau, categorie, tour, court;      
+            String date_string; Date date_match = null;
+            String creneau = null, categorie = null , tour = null, court = null;      
+            
             List<Joueur> joueurs_match = new ArrayList<>();
             List<Equipe> equipes_match = new ArrayList<>();
             
-            date_string = choixDate();
+            date_string = choixDate();  //
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 java.util.Date date = df.parse(date_string);
@@ -216,21 +215,54 @@ public class PanelPlanning extends JPanel{
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            creneau = choixCreneau(date_match);
-            categorie = choixCategorie();
-            tour = choixTour();
-            court = choixCourt();     
-            if(categorie.equals("Simple Homme") ||categorie.equals("Simple Femme")){
-                joueurs_match = choixJoueur(date_match, creneau, tour); //gérer Date !!!
-            }
-            else{
-                equipes_match = choixEquipe(date_match, creneau, tour);
-            }
-            System.out.println(date_match);
-            System.out.println(creneau);
-            System.out.println(categorie);
-            System.out.println(tour);
-            System.out.println(court);
+            //Les conditions permettent d'arrêter la procédure lorsque l'on annule le choix où que l'on rentre une valeur vide/null
+            if(date_string != null){
+                creneau = choixCreneau(date_match);
+                if(creneau != null){
+                    categorie = choixCategorie();
+                    if(categorie != null){
+                        tour = choixTour();
+                        if(tour != null){
+                            court = choixCourt(); 
+                            if(court != null){
+                                if(categorie.equals("Simple Homme") ||categorie.equals("Simple Femme")){
+                                    joueurs_match = choixJoueur(date_match, creneau, tour,categorie);
+                                }
+                                else{
+                                    equipes_match = choixEquipe(date_match, creneau, tour);
+                                }
+                                //Vérification que la séléction des joueurs/equipes a bien eu lieu
+                                if( (categorie.equals("Simple Homme") ||categorie.equals("Simple Femme") && joueurs_match.size() != 0) || 
+                                        (categorie.equals("Double Homme") ||categorie.equals("Double Femme") && equipes_match.size() != 0)){
+                                    
+                                    int id_match = getNewIdMatch();
+                                    //On insère dans la table MATCH le nouveau match
+                                    insererMatch(id_match, date_match, creneau, categorie, tour);
+
+                                    //On assigne le court au match dans les tables SQL
+                                    assignerCourt(court, id_match);
+
+                                    //On assigne les joueurs/équipes au match dans les tables SQL
+                                    if(tour.equals("Simple Homme") || tour.equals("Simple Femme")){
+                                        for(Joueur j : joueurs_match){
+                                            j.assignerAMatch(id_match);
+                                        }
+                                    }
+                                    else{
+                                        for(Equipe eq : equipes_match){
+                                            eq.assignerAMatch(id_match);
+                                        }
+                                    }
+                                    
+                                    Match new_match = new Match(co, id_match, date_match, creneau, categorie, tour);
+                                    data.add(new_match);
+                                    repaint();
+                                }
+                            }
+                        }
+                    }
+                }
+            }     
         }    
         
         public String choixDate()     {
@@ -246,9 +278,10 @@ public class PanelPlanning extends JPanel{
                                                                 " WHERE date_match = STR_TO_DATE( " + date_match + ",  '%Y-%m-%d' )";               
                 ResultSet rs = stmt.executeQuery(query);
                 rs.next();
-                System.out.println(date_match);
                 //24 = 4 courts * 6 creneaux = 24 matchs/jour possibles
                 if(rs.getInt(1) == Creneau.values().length * 4) choixDate();
+                rs.close();
+                stmt.close();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -260,17 +293,19 @@ public class PanelPlanning extends JPanel{
             //Choix du créneau
             creneau = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), Creneau.am_8).toString();
             //Vérification de la date et du créneau
-           
+           String date_string = date_match.toString();
             try {
                 Statement stmt = co.createStatement();
                 String query  = "SELECT COUNT(id_match) FROM  `MATCH`" +
-                                                                " WHERE date_match =  '" + date_match  + "' " +
-                                                                " AND creneau_match = " + creneau + ";";                
+                                                                " WHERE date_match =  STR_TO_DATE( " + date_string + ",  '%Y-%m-%d' )" + 
+                                                                " AND creneau_match = '" + creneau + "';";                
                 ResultSet rs = stmt.executeQuery(query);
                 if(rs.next()){
                     if(rs.getInt(1) == 4) 
                         choixCreneau(date_match);
                 }
+                rs.close();
+                stmt.close();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }              
@@ -298,17 +333,31 @@ public class PanelPlanning extends JPanel{
             return court;
         }
         
-        public List<Joueur> choixJoueur(Date date_match, String creneau, String tour){
+        public List<Joueur> choixJoueur(Date date_match, String creneau, String tour, String categorie){
             List<Joueur> joueurs_assignes = new ArrayList<>();
             List<Joueur> joueurs_dispo = new ArrayList<>();
+      
             
             for(Joueur j : joueur_collection){
                     //vérifier disponibilité
-                    if(j.estDisponible(date_match, creneau) && j.estQualifie(tour)){
-                        joueurs_dispo.add(j);
+                    if(j.estDisponible(date_match, creneau)){
+                        //System.out.println(j.getNom_joueur() + " dispo");
+                        if(j.estQualifie(tour)){
+                            //System.out.println(j.getNom_joueur() + " est qualifié");
+                            if(categorie.equals("Simple Homme") || categorie.equals("Double Homme")){
+                                if(j.isHomme())
+                                    joueurs_dispo.add(j);
+                            }
+                            else{
+                                if(!j.isHomme())
+                                    joueurs_dispo.add(j);
+                            }
+                        }
                     }
             }
+            
             Joueur j1 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
+            joueurs_dispo.remove(j1);
             Joueur j2 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
             joueurs_assignes.add(j1);
             joueurs_assignes.add(j2);
@@ -331,6 +380,50 @@ public class PanelPlanning extends JPanel{
             equipes_assignes.add(eq2);
             return equipes_assignes;
         }  
+        
+        public int getNewIdMatch(){
+            int new_id = 0;
+            try {
+                Statement stmt = co.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT MAX(id_match) FROM `MATCH`");
+                rs.next();
+                new_id = rs.getInt(1) + 1;
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return new_id;
+        }
+        
+        public void insererMatch(int id_match, Date date, String creneau, String categorie, String tour){
+             //Inserer dans la table match
+            try {
+                Statement stmt = co.createStatement();
+                String query = "INSERT INTO `MATCH` VALUES (" + id_match + ", STR_TO_DATE('" + date.toString() + "', '%Y-%m-%d') ,'" + creneau + "','" + categorie + "','" + tour + "');";
+                stmt.executeUpdate(query);
+                
+                stmt.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void assignerCourt(String court, int id_match){
+            try {
+                Statement stmt = co.createStatement();
+                String query = "SELECT id_court FROM COURT WHERE nom_court = '" + court + "';";
+                ResultSet rs = stmt.executeQuery(query);
+                rs.next();
+                int id_court = rs.getInt(1);
+                rs.close();
+                
+                query = "INSERT INTO ASSIGNEMENT_COURT VALUES (" + id_match + "," + id_court + ");";
+                stmt.execute(query);
+                stmt.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         
         public void assignerArbitres(int id_match){
             
@@ -361,13 +454,13 @@ public class PanelPlanning extends JPanel{
                 Statement stmt = co.createStatement();
                 //Suppression assignement arbitres
                 String query = "DELETE FROM ASSIGNEMENT_ARBITRE WHERE id_match =" + id;
-                stmt.execute(query);
+                stmt.executeUpdate(query);
                 //Suppression assignement court
                 query = "DELETE FROM ASSIGNEMENT_COURT WHERE id_match = " + id;
-                stmt.execute(query);
+                stmt.executeUpdate(query);
                 //Suppression equipe ramasseurs
-                query = "DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEUR WHERE id_match = " + id;
-                stmt.execute(query);
+                query = "DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEURS WHERE id_match = " + id;
+                stmt.executeUpdate(query);
                 
                 //Suppression joueur ou equipe
                 if(match.isMatchSimple()){
@@ -376,11 +469,12 @@ public class PanelPlanning extends JPanel{
                 else{
                     query = "DELETE FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id;
                 }
-                stmt.execute(query);
+                stmt.executeUpdate(query);
                 
-                query = "DELETE FROM MATCH WHERE id_match = " + id;
-                stmt.execute(query);
-                
+                query = "DELETE FROM `MATCH` WHERE id_match = " + id;
+                stmt.executeUpdate(query);
+                data.remove(match);
+                repaint();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }

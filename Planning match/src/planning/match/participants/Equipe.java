@@ -30,7 +30,7 @@ public class Equipe extends Participant{
         findJoueurs();
     }
 
-    public void assignerAMatch(Match match){
+    public void assignerAMatch(int id_match){
         
     }
     

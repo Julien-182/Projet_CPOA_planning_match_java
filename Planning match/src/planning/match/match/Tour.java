@@ -2,7 +2,7 @@ package planning.match.match;
 
 public enum Tour {
 
-    Qualification ("Qualifications"),
+    Qualification ("Qualification"),
     Quart_final ("Quart de finale"),
     Demi_finale ("Demi-finale"),
     Finale ("Finale");
