@@ -31,7 +31,14 @@ public class Equipe extends Participant{
     }
 
     public void assignerAMatch(int id_match){
-        
+        try {
+            Statement stmt = co.createStatement();
+            String query = "INSERT INTO ASSIGNEMENT_EQUIPE VALUES (" + id_match + "," + id_equipe + ");";
+            stmt.executeUpdate(query);
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Equipe.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void findJoueurs(){

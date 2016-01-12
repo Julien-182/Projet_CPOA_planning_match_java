@@ -90,30 +90,50 @@ public class Match{
         while(rs.next()){
             //Parcours chaque equipe
             id_equipe = rs.getInt("id_equipe");
-            
-            query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
-            ResultSet rs2 = stmt2.executeQuery(query);
+
             //On parcours les joueurs de l'équipe. Si on est dans l'équipe 1
             if(i == 0){
-                while(rs2.next()){
-                    participant1.add(new Joueur(co,
-                                        rs.getInt("id_joueur"), 
-                                        rs.getString("nom_joueur"), 
-                                        rs.getString("prenom_joueur"),
-                                        rs.getString("nationalite"), 
-                                        rs.getString("sexe")));
-                }
+                query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur1 FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
+                ResultSet rs2 = stmt2.executeQuery(query);
+                rs2.next();
+                participant1.add(new Joueur(co,
+                                    rs2.getInt("id_joueur"), 
+                                    rs2.getString("nom_joueur"), 
+                                    rs2.getString("prenom_joueur"),
+                                    rs2.getString("nationalite"), 
+                                    rs2.getString("sexe")));
+                
+                query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur2 FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
+                rs2 = stmt2.executeQuery(query);
+                rs2.next();
+                participant1.add(new Joueur(co,
+                                    rs2.getInt("id_joueur"), 
+                                    rs2.getString("nom_joueur"), 
+                                    rs2.getString("prenom_joueur"),
+                                    rs2.getString("nationalite"), 
+                                    rs2.getString("sexe")));      
             }
             //Si on est dfans l'équipe 2
             else{
-                while(rs2.next()){
-                    participant2.add(new Joueur(co,
-                                        rs.getInt("id_joueur"), 
-                                        rs.getString("nom_joueur"), 
-                                        rs.getString("prenom_joueur"), 
-                                        rs.getString("nationalite"), 
-                                        rs.getString("sexe")));
-                }
+                query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur1 FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
+                ResultSet rs2 = stmt2.executeQuery(query);
+                rs2.next();
+                participant2.add(new Joueur(co,
+                                    rs2.getInt("id_joueur"), 
+                                    rs2.getString("nom_joueur"), 
+                                    rs2.getString("prenom_joueur"),
+                                    rs2.getString("nationalite"), 
+                                    rs2.getString("sexe")));
+                
+                query = "SELECT * FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur2 FROM EQUIPE WHERE id_equipe = " + id_equipe + ");";
+                rs2 = stmt2.executeQuery(query);
+                rs2.next();
+                participant2.add(new Joueur(co,
+                                    rs2.getInt("id_joueur"), 
+                                    rs2.getString("nom_joueur"), 
+                                    rs2.getString("prenom_joueur"),
+                                    rs2.getString("nationalite"), 
+                                    rs2.getString("sexe")));      
             }
             i++; //permet de préciser que l'on change d'équpe.
         }   

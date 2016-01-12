@@ -32,8 +32,9 @@ public class Joueur extends Participant{
     public void assignerAMatch(int id_match){
         try {
             Statement stmt = co.createStatement();
-            String query = "INSERT INTO ASSIGNEMENT_JOUEUR VALUES (" + id_match + "," + this.id_joueur + ");";
+            String query = "INSERT INTO ASSIGNEMENT_JOUEUR VALUES (" + id_match + "," + id_joueur + ");";
             stmt.executeUpdate(query);
+            stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(Joueur.class.getName()).log(Level.SEVERE, null, ex);
         }    

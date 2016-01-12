@@ -48,7 +48,10 @@ public class Fenetre extends JFrame{
     
     private void initConnection(){
         ConnectionMySQL coMySQL = new ConnectionMySQL();
-        this.co = coMySQL.getConnection();     
+        this.co = coMySQL.getConnection();   
+        if(this.co == null){
+            this.dispose();
+        }
     }
     
     private void initComponent(){

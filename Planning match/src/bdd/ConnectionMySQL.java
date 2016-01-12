@@ -34,7 +34,7 @@ public class ConnectionMySQL {
         if(conn != null)
             JOptionPane.showMessageDialog(null,"Succès de la connection à la base de données !");
         else
-            JOptionPane.showMessageDialog(null,"La connection à la base de données a echoué :/");
+            JOptionPane.showMessageDialog(null,"La connection à la base de données a echoué :/ \n L'application va se fermer");
         return conn;
     }
 }

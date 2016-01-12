@@ -3,6 +3,7 @@ package IHM;
 import bdd.ConnectionMySQL;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Label;
@@ -37,7 +38,8 @@ import planning.match.participants.*;
 public class PanelPlanning extends JPanel{
     
     private JTable planning;
-    PlanningModel planningModel;
+    private PlanningModel planningModel;
+    private JScrollPane jsp;
     private JPanel buttons;
     private JButton ajouterButton, editerButton, supprimerButton;
     
@@ -63,7 +65,8 @@ public class PanelPlanning extends JPanel{
         data = getMatchInfos();
         planningModel = new PlanningModel(data,columnName);
         planning = new JTable(planningModel);   
-        
+        planning.setRowHeight(30);
+        planning.setGridColor(Color.BLUE);
         //Boutons d'actions
         buttons = new JPanel();
         buttons.setLayout(new GridLayout(11,1,0,25));
@@ -74,7 +77,8 @@ public class PanelPlanning extends JPanel{
         supprimerButton = new JButton("Supprimer");
         supprimerButton.addActionListener(new SupprimerActionListener());
         
-        this.add(new JScrollPane(planning), BorderLayout.CENTER);
+        jsp = new JScrollPane(planning);
+        this.add(jsp, BorderLayout.CENTER);
         buttons.add(new Label());buttons.add(new Label());buttons.add(new Label());
         buttons.add(ajouterButton);
         buttons.add(new Label());
@@ -206,17 +210,16 @@ public class PanelPlanning extends JPanel{
             List<Joueur> joueurs_match = new ArrayList<>();
             List<Equipe> equipes_match = new ArrayList<>();
             
-            date_string = choixDate();  //
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                java.util.Date date = df.parse(date_string);
-                date_match = new java.sql.Date(date.getTime());
-            } catch (ParseException ex) {
-                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+            date_string = choixDate();   
             //Les conditions permettent d'arrêter la procédure lorsque l'on annule le choix où que l'on rentre une valeur vide/null
             if(date_string != null){
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    java.util.Date date = df.parse(date_string);
+                    date_match = new java.sql.Date(date.getTime());
+                } catch (ParseException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 creneau = choixCreneau(date_match);
                 if(creneau != null){
                     categorie = choixCategorie();
@@ -243,7 +246,7 @@ public class PanelPlanning extends JPanel{
                                     assignerCourt(court, id_match);
 
                                     //On assigne les joueurs/équipes au match dans les tables SQL
-                                    if(tour.equals("Simple Homme") || tour.equals("Simple Femme")){
+                                    if(categorie.equals("Simple Homme") || categorie.equals("Simple Femme")){
                                         for(Joueur j : joueurs_match){
                                             j.assignerAMatch(id_match);
                                         }
@@ -256,7 +259,8 @@ public class PanelPlanning extends JPanel{
                                     
                                     Match new_match = new Match(co, id_match, date_match, creneau, categorie, tour);
                                     data.add(new_match);
-                                    repaint();
+                                    planningModel.fireTableDataChanged();
+                                    JOptionPane.showConfirmDialog(null, "Match ajouté !", "Confirmation", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
                                 }
                             }
                         }
@@ -270,6 +274,8 @@ public class PanelPlanning extends JPanel{
             
             //Choix de la date
             Date_Match date_match2 = (Date_Match) JOptionPane.showInputDialog(null, "Choisissez une date", "Ajout d'un match", JOptionPane.PLAIN_MESSAGE,null, Date_Match.values(), Date_Match.jour1);
+            if(date_match2 == null) return null;
+            
             date_match = date_match2.toString();
             
             try {
@@ -292,6 +298,8 @@ public class PanelPlanning extends JPanel{
             String creneau = null;
             //Choix du créneau
             creneau = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), Creneau.am_8).toString();
+            
+            if(creneau == null) return null;
             //Vérification de la date et du créneau
            String date_string = date_match.toString();
             try {
@@ -375,6 +383,7 @@ public class PanelPlanning extends JPanel{
             }       
             
             Equipe eq1 = (Equipe) JOptionPane.showInputDialog(null,"Choix du Equipe 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, equipes_dispo.toArray(), equipes_dispo.get(0));
+            equipes_dispo.remove(eq1);
             Equipe eq2 = (Equipe) JOptionPane.showInputDialog(null,"Choix du Equipe 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, equipes_dispo.toArray(), equipes_dispo.get(0));
             equipes_assignes.add(eq1);
             equipes_assignes.add(eq2);
@@ -449,32 +458,37 @@ public class PanelPlanning extends JPanel{
             try {
                 Match match = planningModel.getRowAt(planning.getSelectedRow());
                 int id = match.getId_match();
-                System.out.println(id);
                 
-                Statement stmt = co.createStatement();
-                //Suppression assignement arbitres
-                String query = "DELETE FROM ASSIGNEMENT_ARBITRE WHERE id_match =" + id;
-                stmt.executeUpdate(query);
-                //Suppression assignement court
-                query = "DELETE FROM ASSIGNEMENT_COURT WHERE id_match = " + id;
-                stmt.executeUpdate(query);
-                //Suppression equipe ramasseurs
-                query = "DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEURS WHERE id_match = " + id;
-                stmt.executeUpdate(query);
-                
-                //Suppression joueur ou equipe
-                if(match.isMatchSimple()){
-                    query = "DELETE FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id;
+                int reponse = JOptionPane.showConfirmDialog (null, "Voulez-vous vraiment supprimer ce match ? (id n°" + id + ")" ,"Suppression d'un match",JOptionPane.YES_NO_OPTION);
+                if(reponse == JOptionPane.YES_OPTION){
+
+                    Statement stmt = co.createStatement();
+                    //Suppression assignement arbitres
+                    String query = "DELETE FROM ASSIGNEMENT_ARBITRE WHERE id_match =" + id;
+                    stmt.executeUpdate(query);
+                    //Suppression assignement court
+                    query = "DELETE FROM ASSIGNEMENT_COURT WHERE id_match = " + id;
+                    stmt.executeUpdate(query);
+                    //Suppression equipe ramasseurs
+                    query = "DELETE FROM ASSIGNEMENT_EQUIPE_RAMASSEURS WHERE id_match = " + id;
+                    stmt.executeUpdate(query);
+
+                    //Suppression joueur ou equipe
+                    if(match.isMatchSimple()){
+                        query = "DELETE FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id;
+                    }
+                    else{
+                        query = "DELETE FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + id;
+                    }
+                    stmt.executeUpdate(query);
+
+                    query = "DELETE FROM `MATCH` WHERE id_match = " + id;
+                    stmt.executeUpdate(query);
+                    stmt.close();
+                    data.remove(match);
+                    planningModel.fireTableDataChanged();
+                    JOptionPane.showConfirmDialog(null, "Match supprimé !", "Confirmation", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
                 }
-                else{
-                    query = "DELETE FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id;
-                }
-                stmt.executeUpdate(query);
-                
-                query = "DELETE FROM `MATCH` WHERE id_match = " + id;
-                stmt.executeUpdate(query);
-                data.remove(match);
-                repaint();
             } catch (SQLException ex) {
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }
