@@ -100,7 +100,7 @@ public class Joueur extends Participant{
         //System.out.println("Tout précédent = " + tour_precedent);
         return tour_precedent;
     }
-    //A FAIRE
+    
     public boolean estDisponible(Date date, String creneau){
         try {
             /*

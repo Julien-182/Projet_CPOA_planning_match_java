@@ -18,12 +18,16 @@ import javax.swing.SwingUtilities;
 import planning.match.match.Match;
 
 public class Fenetre extends JFrame{
-    
-    private PanelAjout panelAjout;
+
     private PanelPlanning panelPlanning;
     private Connection co;
     
-    public Fenetre(){
+    private String login = "admin";
+    private String password = "admin";
+    private boolean admin_mode;
+    
+    public Fenetre(boolean mode){
+        this.admin_mode = mode;
         setTitle("MATCH PLANNIFICATOR");
         setSize(new Dimension(1000,700));
         setLocationRelativeTo(null);
@@ -59,11 +63,8 @@ public class Fenetre extends JFrame{
     }
     
     private void initComponent(){
-        panelAjout = new PanelAjout();
-        panelPlanning = new PanelPlanning(this.co);
+        panelPlanning = new PanelPlanning(this.co, admin_mode);
         
-        add(panelPlanning);
-        add(panelAjout);
         add(panelPlanning);
         this.setContentPane(panelPlanning);
     }

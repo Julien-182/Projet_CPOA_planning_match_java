@@ -151,7 +151,7 @@ public class Arbitre {
         return true;
     }
     
-    //A FAIRE
+
     public boolean estDisponible(Date date, String creneau) {
         try {
             /*

@@ -33,17 +33,15 @@ import planning.match.match.Match;
 import planning.match.match.Tour;
 import planning.match.participants.*;
 
-/**
- *
- * @author PONTONNIER la best <3
- */
 public class PanelPlanning extends JPanel{
+    
+    private boolean admin_mode;
     
     private JTable planning;
     private PlanningModel planningModel;
     private JScrollPane jsp;
     private JPanel buttons;
-    private JButton ajouterButton, editerButton, supprimerButton;
+    private JButton ajouterButton, editerButton, supprimerButton, reserverButton;
     
     private List<Match> data;
     private List<Joueur> joueur_collection;
@@ -53,10 +51,11 @@ public class PanelPlanning extends JPanel{
     
     private Connection co;
     
-    public PanelPlanning(Connection p_co){
+    public PanelPlanning(Connection p_co, boolean admin_mode){
         this.setPreferredSize(new Dimension(1000,650));
         this.setLayout(new BorderLayout());
-        this.co = p_co;     
+        this.co = p_co; 
+        this.admin_mode = admin_mode;
         initComponent();
         initCollections();
     }
@@ -73,25 +72,34 @@ public class PanelPlanning extends JPanel{
         planning.getColumn("Créneau").setPreferredWidth(5);
         planning.getColumn("Participant").setPreferredWidth(150);
         planning.setFont(new Font("Calibri Light", Font.PLAIN, 12));
-        //Boutons d'actions
+        
+        
         buttons = new JPanel();
         buttons.setLayout(new GridLayout(11,1,0,25));
         buttons.setSize(300, this.getHeight());
-        ajouterButton = new JButton("Ajouter");
-        ajouterButton.addActionListener(new AjouterActionListener());
-        editerButton = new JButton("Editer");
-        editerButton.addActionListener(new EditerActionListener());
-        supprimerButton = new JButton("Supprimer");
-        supprimerButton.addActionListener(new SupprimerActionListener());
-        
+        if(admin_mode){
+            //Boutons d'actions
+            ajouterButton = new JButton("Ajouter");
+            ajouterButton.addActionListener(new AjouterActionListener());
+            editerButton = new JButton("Editer");
+            editerButton.addActionListener(new EditerActionListener());
+            supprimerButton = new JButton("Supprimer");
+            supprimerButton.addActionListener(new SupprimerActionListener());
+
+            buttons.add(new Label());buttons.add(new Label());buttons.add(new Label());
+            buttons.add(ajouterButton);
+            buttons.add(new Label());
+            buttons.add(editerButton);
+            buttons.add(new Label());
+            buttons.add(supprimerButton);
+        }
+        else{
+            reserverButton = new JButton("Réserver");
+            reserverButton.addActionListener(new ReserverActionListener());
+            buttons.add(reserverButton);
+        }
         jsp = new JScrollPane(planning);
         this.add(jsp, BorderLayout.CENTER);
-        buttons.add(new Label());buttons.add(new Label());buttons.add(new Label());
-        buttons.add(ajouterButton);
-        buttons.add(new Label());
-        buttons.add(editerButton);
-        buttons.add(new Label());
-        buttons.add(supprimerButton);
         this.add(buttons, BorderLayout.EAST);
     }
     
@@ -536,7 +544,7 @@ public class PanelPlanning extends JPanel{
             Match match = planningModel.getRowAt(planning.getSelectedRow());
             int id_match = match.getId_match();
             
-            String[] liste_choix = {"Date" , "Creneau", "Court", "Joueurs/Equipes", "Arbitres", "Ramasseurs"};
+            String[] liste_choix = {"Date" , "Creneau", "Court", "Joueurs/Equipes", "Gagnant", "Arbitres", "Ramasseurs"};
             String choix = (String) JOptionPane.showInputDialog(null,"Choix de modification","Edition d'un match",JOptionPane.PLAIN_MESSAGE,null, liste_choix, null);
             
             switch(choix){
@@ -551,6 +559,9 @@ public class PanelPlanning extends JPanel{
                     break;
                 case "Joueurs/Equipes" :
                     editJoueurs(match);
+                    break;
+                case "Gagnant": 
+                    setGagnant(match);
                     break;
                 case "Arbitres" :
                     editArbitres(match);
@@ -710,6 +721,10 @@ public class PanelPlanning extends JPanel{
             }
         }
         
+        public void setGagnant(Match match){
+            
+        }
+        
         public void editArbitres(Match match){
             
         }
@@ -761,5 +776,20 @@ public class PanelPlanning extends JPanel{
                 Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
             }
         }       
+    }
+    
+    private class ReserverActionListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+           SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Reservation reservation = new Reservation(co);
+                            reservation.setVisible(true);
+                        }
+                    });
+        }
+        
     }
 }
