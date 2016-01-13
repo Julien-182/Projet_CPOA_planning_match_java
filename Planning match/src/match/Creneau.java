@@ -1,4 +1,4 @@
-package planning.match.match;
+package match;
 
 
 public enum Creneau {

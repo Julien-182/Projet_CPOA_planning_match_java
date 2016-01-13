@@ -1,14 +1,14 @@
-package planning.match;
+package main;
 import IHM.Authentification;
 import IHM.Fenetre;
 import java.text.ParseException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import planning.match.match.Match;
-import planning.match.participants.Equipe;
-import planning.match.participants.Joueur;
-import planning.match.participants.Ramasseur;
-import planning.match.participants.Arbitre;
+import match.Match;
+import participants.Equipe;
+import participants.Joueur;
+import participants.Ramasseur;
+import participants.Arbitre;
 
 public class main {
 

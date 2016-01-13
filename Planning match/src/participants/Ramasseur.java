@@ -1,4 +1,4 @@
-package planning.match.participants;
+package participants;
 
 import java.util.Date;
 import java.sql.*;

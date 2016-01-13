@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import planning.match.match.Creneau;
-import planning.match.match.Date_Match;
+import match.Creneau;
+import match.Date_Match;
 
 public class Reservation extends JFrame{
 

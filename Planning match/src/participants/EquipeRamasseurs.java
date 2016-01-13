@@ -1,4 +1,4 @@
-package planning.match.participants;
+package participants;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import planning.match.match.Match;
+import match.Match;
 
 public class EquipeRamasseurs {
 

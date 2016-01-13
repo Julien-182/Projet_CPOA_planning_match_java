@@ -1,4 +1,4 @@
-package planning.match.participants;
+package participants;
 
 public abstract class Participant {
 

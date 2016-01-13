@@ -1,6 +1,5 @@
-package planning.match.participants;
+package participants;
 
-import bdd.ConfigConnection;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,7 +8,7 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import planning.match.match.Match;
+import match.Match;
 
 public class Joueur extends Participant{
     

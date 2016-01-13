@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import planning.match.match.Match;
+import match.Match;
 
 public class Fenetre extends JFrame{
 

@@ -1,8 +1,10 @@
 package IHM;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
-import planning.match.match.Match;
+import match.Match;
 
 public class PlanningModel extends AbstractTableModel{
 
@@ -12,6 +14,7 @@ public class PlanningModel extends AbstractTableModel{
     public PlanningModel(List<Match> data, String[] titres){
         this.data = data;
         this.titres = titres;
+        Collections.sort(this.data, new DateComparator());
     }
     
     @Override
@@ -45,5 +48,14 @@ public class PlanningModel extends AbstractTableModel{
             case(5): return match.getCourt();
             default : return "";
         }
-    }   
+    }  
+    
+    private class DateComparator implements Comparator<Match>{
+
+        @Override
+        public int compare(Match t, Match t1) {
+            return t.getDate().compareTo(t1.getDate());
+        }
+        
+    }
 }

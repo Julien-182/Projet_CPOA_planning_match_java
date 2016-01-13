@@ -1,8 +1,11 @@
-package planning.match.match;
+package match;
 
+import participants.Equipe;
+import participants.EquipeRamasseurs;
+import participants.Arbitre;
+import participants.Joueur;
 import java.sql.Connection;
 import java.util.List;
-import planning.match.participants.*;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -307,6 +310,41 @@ public class Match{
             joueurs += joueur.getNom_joueur() + " ";
         }
         return joueurs;
+    }
+    
+    public List<Joueur> getJoueurs(){
+        List<Joueur> joueurs = new ArrayList<>();
+        joueurs.add(participant1.get(0));
+        joueurs.add(participant2.get(0));
+        return joueurs;
+    }
+    
+    public List<Equipe> getEquipes(){
+        List<Equipe> equipes = new ArrayList<>();
+        try {
+            Statement stmt = co.createStatement();
+            String query = "SELECT * FROM EQUIPE WHERE id_joueur1 = " + participant1.get(0).getId_joueur() + " AND id_joueur2 = " + participant1.get(1).getId_joueur() + ";";
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            equipes.add(new Equipe(
+                                    co,
+                                    rs.getInt("id_equipe"),
+                                    rs.getInt("id_joueur1"),
+                                    rs.getInt("id_joueur2")                                        
+                                ));
+            query = "SELECT * FROM EQUIPE WHERE id_joueur1 = " + participant2.get(0).getId_joueur() + " AND id_joueur2 = " + participant2.get(1).getId_joueur() + ";";
+            rs = stmt.executeQuery(query);
+            rs.next();
+            equipes.add(new Equipe(
+                                    co,
+                                    rs.getInt("id_equipe"),
+                                    rs.getInt("id_joueur1"),
+                                    rs.getInt("id_joueur2")                                        
+                                ));
+        } catch (SQLException ex) {
+            Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return equipes;
     }
     
     public boolean isMatchSimple(){

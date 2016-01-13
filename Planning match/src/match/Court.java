@@ -1,4 +1,4 @@
-package planning.match.match;
+package match;
 
 import java.io.IOException;
 import java.sql.*;

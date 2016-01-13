@@ -1,5 +1,9 @@
 package IHM;
 
+import participants.Equipe;
+import participants.EquipeRamasseurs;
+import participants.Arbitre;
+import participants.Joueur;
 import bdd.ConnectionMySQL;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -26,12 +30,11 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import planning.match.match.Court;
-import planning.match.match.Creneau;
-import planning.match.match.Date_Match;
-import planning.match.match.Match;
-import planning.match.match.Tour;
-import planning.match.participants.*;
+import match.Court;
+import match.Creneau;
+import match.Date_Match;
+import match.Match;
+import match.Tour;
 
 public class PanelPlanning extends JPanel{
     
@@ -72,6 +75,7 @@ public class PanelPlanning extends JPanel{
         planning.getColumn("Créneau").setPreferredWidth(5);
         planning.getColumn("Participant").setPreferredWidth(150);
         planning.setFont(new Font("Calibri Light", Font.PLAIN, 12));
+        
         
         
         buttons = new JPanel();
@@ -722,7 +726,23 @@ public class PanelPlanning extends JPanel{
         }
         
         public void setGagnant(Match match){
-            
+            String query;
+            try {
+                Statement stmt = co.createStatement();
+                if(match.isMatchSimple()){
+                    Joueur j = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null,match.getJoueurs().toArray(), null);
+                    query = "INSERT INTO GAGNANT_SIMPLE VALUES(" + match.getId_match() + "," + j.getId_joueur() + ");";
+                    stmt.executeUpdate(query);
+                    JOptionPane.showConfirmDialog(null, j.getNom_joueur() + " est gagnat du match !", "Gagnant du match", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+                }else{
+                    Equipe e = (Equipe) JOptionPane.showInputDialog(null,"Choix du Joueur 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null,match.getEquipes().toArray(), null);
+                    query = "INSERT INTO GAGNANT_DOUBLE VALUES(" + match.getId_match() + "," + e.getId_equipe() + ");";
+                    stmt.executeUpdate(query);
+                    JOptionPane.showConfirmDialog(null, e.toString() + " sont gagnants du match !", "Gagnant du match", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         public void editArbitres(Match match){
