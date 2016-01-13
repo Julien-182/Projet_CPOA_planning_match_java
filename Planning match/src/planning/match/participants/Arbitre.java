@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import planning.match.match.Match;
 
 public class Arbitre {
@@ -29,8 +31,15 @@ public class Arbitre {
         this.nationalite = nationalite;
     }
     
-    public void assignerAMatch(Match match){
-        
+    public void assignerAMatch(int id_match, String role){
+        try {
+            Statement stmt = co.createStatement();
+            String query = "INSERT INTO ASSIGNEMENT_ARBITRE VALUES (" + id_match + "," + this.id_arbitre + ", '" + role +"');";
+            stmt.executeUpdate(query);
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Arbitre.class.getName()).log(Level.SEVERE, null, ex);
+        }   
     }
 
     @Override
@@ -96,7 +105,7 @@ public class Arbitre {
      * @return vrai si l'arbitre à le rang nécéssaire pour être arbitre de chaise
      */
     public boolean isArbitreFiletLigne(){
-        return "JAT2".equals(this.getRank_arbitre());
+        return "JAT2".equals(this.getRank_arbitre()) ||"ITT1".equals(this.getRank_arbitre());
     }
         
     /**
@@ -124,29 +133,52 @@ public class Arbitre {
         }
     }
     
+    public boolean canArbitrerChaise(int id_match){
+        try {
+            Statement stmt = co.createStatement();
+            String query = "SELECT nationalite FROM JOUEUR WHERE id_joueur IN (SELECT id_joueur FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + id_match + ");";
+            ResultSet rs = stmt.executeQuery(query);
+            
+            while(rs.next()){
+                if(rs.getString("nationalite").equals(this.nationalite))
+                    return false;
+            }
+            rs.next();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Arbitre.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return true;
+    }
+    
     //A FAIRE
-    public boolean estDisponible(Date date, String creneau) throws ClassNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException{
-        /*
+    public boolean estDisponible(Date date, String creneau) {
+        try {
+            /*
             Recuperer tous les matchs joués pendant la date et le créneau
             Regarder dans les matchs si l'arbitre est assigné au match
-                SI OUI --> return false (pas dispo)
-                SI NON --> return true (dispo)
-        */
-        Boolean dispo;
-        
-        Statement stmt = this.co.createStatement();
-        ResultSet rset = stmt.executeQuery("SELECT id_ramasseur "
-                                         + "FROM ASSIGNMENT_RAMASSEUR "
-                                         + "WHERE id_match IN("
-                                                               + "SELECT id_match"
-                                                               + " FROM MATCHS "
-                                                               + "WHERE date_match = " + date + "AND creneau_match = " + creneau
-                                        + ")");
-        if(rset.next()) dispo =  false;
-        else dispo = true;
-        
-        stmt.close();
-        rset.close();
-        return dispo;
+            SI OUI --> return false (pas dispo)
+            SI NON --> return true (dispo)
+            */
+            Boolean dispo;
+            
+            Statement stmt = this.co.createStatement();
+            ResultSet rset = stmt.executeQuery("SELECT id_arbitre "
+                    + "FROM ASSIGNEMENT_ARBITRE "
+                    + "WHERE id_match IN("
+                    + "SELECT id_match"
+                    + " FROM `MATCH` "
+                    + "WHERE date_match = STR_TO_DATE('" + date.toString() + "' , '%Y-%M-%d')" + " AND creneau_match = '" + creneau + "'"
+                    + ")");
+            if(rset.next()) dispo =  false;
+            else dispo = true;
+            
+            stmt.close();
+            rset.close();
+            return dispo;
+        } catch (SQLException ex) {
+            Logger.getLogger(Arbitre.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 }

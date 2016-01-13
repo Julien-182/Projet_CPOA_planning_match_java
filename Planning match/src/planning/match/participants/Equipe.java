@@ -77,7 +77,7 @@ public class Equipe extends Participant{
 
     @Override
     public String toString() {
-        return "Equipe {" + "\nid_equipe = " + id_equipe + " }";
+        return this.joueur1.getNom_joueur() + " et " + this.joueur2.getNom_joueur();
     }
     
     public boolean estDisponible(Date date, String creneau) {

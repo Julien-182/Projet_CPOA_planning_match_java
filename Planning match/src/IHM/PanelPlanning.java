@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
@@ -67,6 +68,7 @@ public class PanelPlanning extends JPanel{
         planning = new JTable(planningModel);   
         planning.setRowHeight(30);
         planning.setGridColor(Color.BLUE);
+        planning.setFont(new Font("Calibri Light", Font.PLAIN, 12));
         //Boutons d'actions
         buttons = new JPanel();
         buttons.setLayout(new GridLayout(11,1,0,25));
@@ -226,7 +228,7 @@ public class PanelPlanning extends JPanel{
                     if(categorie != null){
                         tour = choixTour();
                         if(tour != null){
-                            court = choixCourt(); 
+                            court = choixCourt(date_match, creneau); 
                             if(court != null){
                                 if(categorie.equals("Simple Homme") ||categorie.equals("Simple Femme")){
                                     joueurs_match = choixJoueur(date_match, creneau, tour,categorie);
@@ -257,6 +259,10 @@ public class PanelPlanning extends JPanel{
                                         }
                                     }
                                     
+                                    assignerArbitres(id_match, date_match, creneau);
+                                    
+                                    assignerRamasseurs(id_match,date_match,creneau);
+                                    
                                     Match new_match = new Match(co, id_match, date_match, creneau, categorie, tour);
                                     data.add(new_match);
                                     planningModel.fireTableDataChanged();
@@ -273,7 +279,7 @@ public class PanelPlanning extends JPanel{
             String date_match = null;
             
             //Choix de la date
-            Date_Match date_match2 = (Date_Match) JOptionPane.showInputDialog(null, "Choisissez une date", "Ajout d'un match", JOptionPane.PLAIN_MESSAGE,null, Date_Match.values(), Date_Match.jour1);
+            Date_Match date_match2 = (Date_Match) JOptionPane.showInputDialog(null, "Choisissez une date", "Ajout d'un match", JOptionPane.PLAIN_MESSAGE,null, Date_Match.values(), null);
             if(date_match2 == null) return null;
             
             date_match = date_match2.toString();
@@ -297,7 +303,7 @@ public class PanelPlanning extends JPanel{
         public String choixCreneau(Date date_match){
             String creneau = null;
             //Choix du créneau
-            creneau = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), Creneau.am_8).toString();
+            creneau = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Creneau.values(), null).toString();
             
             if(creneau == null) return null;
             //Vérification de la date et du créneau
@@ -330,19 +336,36 @@ public class PanelPlanning extends JPanel{
         
         public String choixTour(){
             String tour = null;
-            tour = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Tour.values(), Tour.Qualification).toString();
+            tour = JOptionPane.showInputDialog(null,"Choix du créneau","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, Tour.values(), null).toString();
             return tour;
         }
         
-        public String choixCourt(){
+        public String choixCourt(Date date, String creneau){
             String court = null;
             String[] liste_courts = {"Grand Court de Gerlan", "Court de Saint-Andre","Moyen Court", "Golden Court"};
-            court = (String)JOptionPane.showInputDialog(null,"Choix du court","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, liste_courts, liste_courts[0]);
+            court = (String)JOptionPane.showInputDialog(null,"Choix du court","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, liste_courts, null);
+            if(court != null){
+                try {
+                    Statement stmt = co.createStatement();
+                    String query = "SELECT id_match FROM `MATCH` WHERE date_match = STR_TO_DATE('" + date.toString() +"', '%Y-%m-%d')\n" +
+"									AND creneau_match = '" + creneau +"' \n" +
+"									AND id_match IN (SELECT id_match \n" +
+                                    "                                                     FROM ASSIGNEMENT_COURT \n" +
+                                    "                                                     WHERE id_court IN (SELECT id_court FROM COURT\n" +
+                                    "                                                                        WHERE nom_court = '" + court + "'));";
+                    ResultSet rs = stmt.executeQuery(query);
+                    if(rs.next()) choixCourt(date,creneau);
+                    rs.close();
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             return court;
         }
         
         public List<Joueur> choixJoueur(Date date_match, String creneau, String tour, String categorie){
-            List<Joueur> joueurs_assignes = new ArrayList<>();
+            List<Joueur> joueurs_assignes = null;
             List<Joueur> joueurs_dispo = new ArrayList<>();
       
             
@@ -365,10 +388,15 @@ public class PanelPlanning extends JPanel{
             }
             
             Joueur j1 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 1","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
-            joueurs_dispo.remove(j1);
-            Joueur j2 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
-            joueurs_assignes.add(j1);
-            joueurs_assignes.add(j2);
+            if(j1 != null){
+                joueurs_assignes =  new ArrayList<>();
+                joueurs_dispo.remove(j1);
+                Joueur j2 = (Joueur) JOptionPane.showInputDialog(null,"Choix du Joueur 2","Ajout d'un match",JOptionPane.PLAIN_MESSAGE,null, joueurs_dispo.toArray(), null);
+                if(j2 != null){
+                    joueurs_assignes.add(j1);
+                    joueurs_assignes.add(j2);
+                }
+            }
             return joueurs_assignes;
         }
         
@@ -434,12 +462,63 @@ public class PanelPlanning extends JPanel{
             }
         }
         
-        public void assignerArbitres(int id_match){
+        public void assignerArbitres(int id_match, Date date, String creneau){
+            List<Arbitre> arbitres_dispo = new ArrayList<>();
+            boolean arbitre_choisi = false; int i = 0;
             
+            for(Arbitre a : arbitre_collection){
+                if(a.estDisponible(date, creneau)){
+                    arbitres_dispo.add(a);
+                }
+            }
+            if(arbitres_dispo.size() < 10) System.out.println("Pas assez d'arbitres dispo pour le match " + id_match);
+            
+            //Assignement arbitre chaise    1 seul
+            while(!arbitre_choisi){
+                Arbitre ac = arbitres_dispo.get(i);
+                if(ac.isArbitreChaise() && ac.canArbitrerChaise(id_match)){
+                    ac.assignerAMatch(id_match, "Chaise");
+                    arbitres_dispo.remove(ac);
+                    arbitre_choisi = true;
+                }
+                i++;
+            }
+            arbitre_choisi = false;
+            i = 0;
+            
+            //Assignement arbitre filet
+            while(!arbitre_choisi){
+                Arbitre af = arbitres_dispo.get(i);
+                if(af.isArbitreFiletLigne()){
+                    af.assignerAMatch(id_match, "Filet");
+                    arbitres_dispo.remove(af);
+                    arbitre_choisi = true;
+                }
+                i++;
+            }
+            i = 0;
+            arbitre_choisi = false;
+            
+            //Assignement arbitres lignes
+            for(i = 0 ; i < 8 ; i++){
+                Arbitre al = arbitres_dispo.get(i);
+                if(al.isArbitreFiletLigne()){
+                    al.assignerAMatch(id_match, "Ligne");
+                }
+            }
         }
         
-        public void assignerRamasseurs(int id_match){
-            
+        public void assignerRamasseurs(int id_match,Date date, String creneau){
+            List<EquipeRamasseurs> ramasseurs_dispo = new ArrayList();
+            for(EquipeRamasseurs eq : ramasseurs_collection){
+                if(eq.estDisponible(date, creneau)){
+                    ramasseurs_dispo.add(eq);
+                }
+            }
+            for(int i = 0 ; i < 2 ; i++){
+                EquipeRamasseurs eq = ramasseurs_dispo.get(i);
+                eq.assignerAMatch(id_match);
+            }
         }
     }
     
