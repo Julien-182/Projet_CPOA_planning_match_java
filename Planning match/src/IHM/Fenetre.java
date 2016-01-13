@@ -2,6 +2,8 @@ package IHM;
 
 import bdd.ConnectionMySQL;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -41,6 +43,8 @@ public class Fenetre extends JFrame{
             }
         });
         
+        Image icone = Toolkit.getDefaultToolkit().getImage("src/icon.png"); 
+        this.setIconImage(icone);
         setResizable(false);
         initConnection();
         initComponent();

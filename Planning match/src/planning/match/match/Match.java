@@ -246,6 +246,36 @@ public class Match{
                 + ", participant2=" + participant2 + '}';
     }
     
+    public void setDate(Date date){
+        this.date = date;
+    }
+    
+    public void setCreneau(String new_creneau){
+        this.creneau = new_creneau;
+    }
+    
+    public void setCourt(String court){
+        this.court = court;
+    }
+    
+    public void setJoueurs(List<Joueur> new_joueurs){
+        if(this.isMatchSimple()){
+            this.participant1.clear();
+            this.participant2.clear();
+            this.participant1.add(new_joueurs.get(0));
+            this.participant2.add(new_joueurs.get(1));
+        }
+    }
+    
+    public void setEquipes(List<Equipe> new_equipes){
+        if(!this.isMatchSimple()){
+            List<Joueur> liste1 = new_equipes.get(0).getJoueurs();
+            List<Joueur> liste2 = new_equipes.get(1).getJoueurs();
+            participant1 = liste1;
+            participant2 = liste2;
+        }
+    }     
+    
     public int getId_match() {
         return id_match;
     }

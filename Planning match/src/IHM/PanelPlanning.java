@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -68,6 +69,9 @@ public class PanelPlanning extends JPanel{
         planning = new JTable(planningModel);   
         planning.setRowHeight(30);
         planning.setGridColor(Color.BLUE);
+        planning.getColumn("Date").setPreferredWidth(25);
+        planning.getColumn("Créneau").setPreferredWidth(5);
+        planning.getColumn("Participant").setPreferredWidth(150);
         planning.setFont(new Font("Calibri Light", Font.PLAIN, 12));
         //Boutons d'actions
         buttons = new JPanel();
@@ -76,6 +80,7 @@ public class PanelPlanning extends JPanel{
         ajouterButton = new JButton("Ajouter");
         ajouterButton.addActionListener(new AjouterActionListener());
         editerButton = new JButton("Editer");
+        editerButton.addActionListener(new EditerActionListener());
         supprimerButton = new JButton("Supprimer");
         supprimerButton.addActionListener(new SupprimerActionListener());
         
@@ -524,10 +529,194 @@ public class PanelPlanning extends JPanel{
     
     private class EditerActionListener implements ActionListener{
 
+        AjouterActionListener al = new AjouterActionListener();
+        
         @Override
         public void actionPerformed(ActionEvent e) {
+            Match match = planningModel.getRowAt(planning.getSelectedRow());
+            int id_match = match.getId_match();
             
+            String[] liste_choix = {"Date" , "Creneau", "Court", "Joueurs/Equipes", "Arbitres", "Ramasseurs"};
+            String choix = (String) JOptionPane.showInputDialog(null,"Choix de modification","Edition d'un match",JOptionPane.PLAIN_MESSAGE,null, liste_choix, null);
+            
+            switch(choix){
+                case "Date" :
+                    editDate(match);
+                    break;
+                case "Creneau" :
+                    editCreneau(match);
+                    break;
+                case "Court" :
+                    editCourt(match);
+                    break;
+                case "Joueurs/Equipes" :
+                    editJoueurs(match);
+                    break;
+                case "Arbitres" :
+                    editArbitres(match);
+                    break;
+                case "Ramasseurs" :
+                    editRamasseurs(match);
+                   break;
+                default :
+                    break;
+            }
         } 
+        
+        public void editDate(Match match){
+            String date_string = al.choixDate();
+            System.out.println(date_string);
+            Date date_match = null;
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                java.util.Date date = df.parse(date_string);
+                date_match = new java.sql.Date(date.getTime());
+            } catch (ParseException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                Statement stmt = co.createStatement();
+                String query = "UPDATE `MATCH` "
+                            + "SET date_match = STR_TO_DATE('" + date_match.toString() + "', '%Y-%m-%d') "
+                            + "WHERE id_match = " + match.getId_match();
+                stmt.executeUpdate(query);
+                stmt.close();
+                match.setDate(date_match);
+                planningModel.fireTableDataChanged();
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void editCreneau(Match match){
+            String creneau = al.choixCreneau(match.getDate());
+            try {
+                Statement stmt = co.createStatement();
+                String query = "UPDATE `MATCH` "
+                            + "SET creneau_match = '" + creneau + "' "
+                            + "WHERE id_match = " + match.getId_match();
+                stmt.executeUpdate(query);
+                stmt.close();
+                match.setCreneau(creneau);
+                planningModel.fireTableDataChanged();
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void editCourt(Match match){
+            String court = al.choixCourt(match.getDate(), match.getCreneau());
+            try {
+                Statement stmt = co.createStatement();
+                String query = "UPDATE ASSIGNEMENT_COURT "
+                                + "SET id_court = (SELECT id_court FROM COURT WHERE nom_court = '" + court + "') "
+                                + "WHERE id_match = " + match.getId_match() + ";";
+                stmt.executeUpdate(query);
+                stmt.close();
+                
+                match.setCourt(court);
+                planningModel.fireTableDataChanged();
+            } catch (SQLException ex) {
+                Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void editJoueurs(Match match){
+            String query;
+            int[] old_id = new int[2];
+            
+            if(match.isMatchSimple()){
+                //On récupère les id des anciens joueurs
+                try {
+                    Statement stmt = co.createStatement();
+                    query = "SELECT id_joueur FROM ASSIGNEMENT_JOUEUR WHERE id_match = " + match.getId_match();
+                    ResultSet rs = stmt.executeQuery(query);
+                    rs.next();
+                    old_id[0] = rs.getInt(1);
+                    rs.next();
+                    old_id[0] = rs.getInt(1);
+                    rs.close();
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                //on choisit les nouvelles équipes
+                List<Joueur> joueurs_assignes = new ArrayList();
+                joueurs_assignes = al.choixJoueur(match.getDate(), match.getCreneau(), match.getTour(), match.getCategorie());
+                
+                //On remplace les anciennes équipes par les nouvelles
+                try {                
+                    Statement stmt = co.createStatement();
+                    query = "UPDATE ASSIGNEMENT_JOUEUR "
+                        + "SET id_joueur = " + joueurs_assignes.get(0).getId_joueur() 
+                        + " WHERE id_match = " + match.getId_match() + " AND id_joueur = " + old_id[0] + ";";
+
+                    stmt.executeUpdate(query);
+                    
+                    query = "UPDATE ASSIGNEMENT_JOUEUR "
+                        + "SET id_joueur = " + joueurs_assignes.get(1).getId_joueur() 
+                        + " WHERE id_match = " + match.getId_match() + " AND id_joueur = " + old_id[1] + ";";
+                    
+                    stmt.executeUpdate(query);
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                //on remplace les joueurs dans l'objet match puis on actualise le tableau
+                match.setJoueurs(joueurs_assignes);
+                planningModel.fireTableDataChanged();
+            }
+            
+            else{
+                try {
+                    Statement stmt = co.createStatement();
+                    query = "SELECT id_equipe FROM ASSIGNEMENT_EQUIPE WHERE id_match = " + match.getId_match();
+                    ResultSet rs = stmt.executeQuery(query);
+                    rs.next();
+                    old_id[0] = rs.getInt(1);
+                    rs.next();
+                    old_id[0] = rs.getInt(1);
+                    rs.close();
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                List<Equipe> equipes_assignees = new ArrayList();
+                equipes_assignees = al.choixEquipe(match.getDate(), match.getCreneau(), match.getTour());
+                
+                try {
+                    Statement stmt = co.createStatement();
+                    query = "UPDATE ASSIGNEMENT_EQUIPE "
+                        + "SET id_equipe = " + equipes_assignees.get(0).getId_equipe()
+                        + " WHERE id_match = " + match.getId_match() + " AND id_equipe = " + old_id[0] + ";";
+
+                    stmt.executeUpdate(query);
+                    
+                    query = "UPDATE ASSIGNEMENT_EQUIPE "
+                        + "SET id_equipe = " + equipes_assignees.get(1).getId_equipe() 
+                        + " WHERE id_match = " + match.getId_match() + " AND id_equipe = " + old_id[1] + ";";
+                    
+                    stmt.executeUpdate(query);
+                    stmt.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanelPlanning.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                match.setEquipes(equipes_assignees);
+                planningModel.fireTableDataChanged();
+            }
+        }
+        
+        public void editArbitres(Match match){
+            
+        }
+        
+        public void editRamasseurs(Match match){
+            
+        }
     }
     
     private class SupprimerActionListener implements ActionListener{
